@@ -1,0 +1,1 @@
+<%@ ServiceHost Service="ErlangVMA.VirtualMachineConsole, ErlangVMA" Debug="true" Language="C#" CodeBehind="VirtualMachineConsole.svc.cs" %>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{74961AFC-2CC1-40B9-A509-1E6923799462}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ErlangVMA.VmController</RootNamespace>
+    <AssemblyName>ErlangVMA.VmController</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\usr\lib\mono\gac\Newtonsoft.Json\4.5.0.0__b9a188c8922137c6\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="IVmBroker.cs" />
+    <Compile Include="VmUser.cs" />
+    <Compile Include="IVmNodeManager.cs" />
+    <Compile Include="VmBroker.cs" />
+    <Compile Include="LocalShellVmNodeManager.cs" />
+    <Compile Include="VirtualBoxVmNodeManager.cs" />
+    <Compile Include="VmNodeId.cs" />
+    <Compile Include="VmHostAddress.cs" />
+    <Compile Include="VmNodeAddress.cs" />
+    <Compile Include="VmHostAddressJsonConverter.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\ErlangVMA.TerminalEmulator\ErlangVMA.TerminalEmulation.csproj">
+      <Project>{BF048058-8AE8-4CB3-8882-717C9634A48A}</Project>
+      <Name>ErlangVMA.TerminalEmulation</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

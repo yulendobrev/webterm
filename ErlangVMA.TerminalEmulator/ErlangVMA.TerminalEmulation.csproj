@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BF048058-8AE8-4CB3-8882-717C9634A48A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ErlangVMA.TerminalEmulation</RootNamespace>
+    <AssemblyName>ErlangVMA.TerminalEmulator</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="TerminalStreamDecoder.cs" />
+    <Compile Include="TerminalScreen.cs" />
+    <Compile Include="TerminalScreenCharacter.cs" />
+    <Compile Include="TerminalEmulator.cs" />
+    <Compile Include="ITerminalStreamDecoder.cs" />
+    <Compile Include="ITerminalDisplay.cs" />
+    <Compile Include="ITerminalCommandInterpreter.cs" />
+    <Compile Include="Entities\CharacterSetSlot.cs" />
+    <Compile Include="Entities\ClearDirection.cs" />
+    <Compile Include="Entities\Direction.cs" />
+    <Compile Include="Entities\GraphicRendition.cs" />
+    <Compile Include="Entities\TerminalColor.cs" />
+    <Compile Include="Entities\Point.cs" />
+    <Compile Include="Entities\TerminalMode.cs" />
+    <Compile Include="Entities\TerminalWindowSize.cs" />
+    <Compile Include="Entities\ScreenCharacterRendition.cs" />
+    <Compile Include="Entities\TerminalFontEffect.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+</Project>
