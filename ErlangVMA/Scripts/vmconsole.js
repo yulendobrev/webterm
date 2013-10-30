@@ -89,7 +89,8 @@ function updateCursorPosition(cursorPosition) {
     function setupUi() {
         var vmConsole = document.getElementById("vmConsole"),
             vmConsoleArea = document.getElementById("vmConsoleArea"),
-            vmConsoleDisplay = document.getElementById("vmConsoleDisplay");
+            vmConsoleDisplay = document.getElementById("vmConsoleDisplay"),
+            refresh = document.getElementById("refresh");
 
 		for (var i = 0; i < 25; ++i) {
         	var line = initNewLine();
@@ -121,25 +122,38 @@ function updateCursorPosition(cursorPosition) {
         $(vmConsole).focusin(resetBlinkingCursor);
         
         $(vmConsoleArea).focus();
+        
+        $(refresh).click(function () {
+        	refresh.disabled = true;
+        
+        	var vm = $.connection.virtualMachineHub,
+        		screenRefresh = vm.server.getScreen(nodeId);
+        	
+        	screenRefresh.done(function (screen) {
+        		vm.client.updateScreen(nodeId, screen);
+        	}).fail(function (error) {
+        		alert("Refresh failed: " + error);
+        	}).always(function () {
+        		refresh.disabled = false;
+        	});
+        });
     }
     
     $(function () {
     	var vm = $.connection.virtualMachineHub;
     	
     	vm.client.updateScreen = function (id, screenData) {
-        	console.log("Received " + screenData.Data);
-        	
         	var k = 0,
         		data = screenData.Data.join("");
         	
-        	for (var row = screenData.Y; row < screenData.Y + screenData.Width; ++row) {
+        	for (var row = screenData.Y; row < screenData.Y + screenData.Height; ++row) {
         		var rowDiv = getRow(row),
         			currentContents = rowDiv.textContent;
         			
-        		var newContent = data.slice(k, k + screenData.Height);
-        		rowDiv.textContent = currentContents.slice(0, screenData.X) + newContent + currentContents.slice(screenData.X + screenData.Height, 80);
+        		var newContent = data.slice(k, k + screenData.Width);
+        		rowDiv.textContent = currentContents.slice(0, screenData.X) + newContent + currentContents.slice(screenData.X + screenData.Width, 80);
         			
-        		k += screenData.Height;
+        		k += screenData.Width;
         	}
         	
         	updateCursorPosition(screenData.CursorPosition);

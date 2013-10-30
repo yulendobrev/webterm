@@ -12,8 +12,11 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
-	<div id="vmConsole" style="width: 100%">
-		<textarea id="vmConsoleArea" rows="25"></textarea>
-		<div id="vmConsoleDisplay"></div>
+	<div>
+		<button id="refresh" style="float:right; margin: 10px 0px">Refresh</button>
+		<div id="vmConsole" style="width: 100%">
+			<textarea id="vmConsoleArea" rows="25"></textarea>
+			<div id="vmConsoleDisplay"></div>
+		</div>
 	</div>
 </asp:Content>
