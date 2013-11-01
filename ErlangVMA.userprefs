@@ -1,13 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulator/TerminalEmulator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.VmController/LocalShellVmNodeManager.cs">
     <Files>
-      <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="32" Column="27" />
+      <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="24" Column="15" />
       <File FileName="ErlangVMA/Hubs/VirtualMachineHub.cs" Line="70" Column="73" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="82" Column="5" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="418" Column="1" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="72" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="37" Column="4" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="293" Column="3" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="274" Column="14" />
       <File FileName="ErlangVMA/Scripts/vmconsole.input.js" Line="78" Column="25" />
+      <File FileName="ErlangVMA/Views/Home/Index.aspx" Line="16" Column="78" />
+      <File FileName="ErlangVMA.VmController/LocalShellVmNodeManager.cs" Line="13" Column="67" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -15,11 +17,14 @@
           <Node name="ErlangVMA" expanded="True">
             <Node name="Hubs" expanded="True" />
             <Node name="Scripts" expanded="True" />
+            <Node name="Views" expanded="True">
+              <Node name="Home" expanded="True" />
+            </Node>
           </Node>
-          <Node name="ErlangVMA.TerminalEmulation" expanded="True">
-            <Node name="TerminalEmulator.cs" selected="True" />
+          <Node name="ErlangVMA.TerminalEmulation" expanded="True" />
+          <Node name="ErlangVMA.VmController" expanded="True">
+            <Node name="LocalShellVmNodeManager.cs" selected="True" />
           </Node>
-          <Node name="ErlangVMA.VmController" expanded="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">
@@ -36,13 +41,14 @@
     <BreakpointStore>
       <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="109" />
       <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="114" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="267" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="291" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="333" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="412" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="421" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="426" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="252" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="271" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="295" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="339" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="416" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="425" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="430" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="256" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="241" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

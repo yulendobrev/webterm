@@ -196,6 +196,10 @@ namespace ErlangVMA.TerminalEmulation
 		public void MoveCursorTo(Point position)
 		{
 			cursorPosition = position.Clone();
+
+			EnsureRowInScreenBounds();
+			EnsureColumnInScreenBounds();
+
 			RaiseCursorPositionChanged();
 		}
 
@@ -321,22 +325,22 @@ namespace ErlangVMA.TerminalEmulation
 
 		public void ScrollPageUpwards(int linesToScroll)
 		{
-			currentLine -= linesToScroll;
-			if (currentLine < 0)
-			{
-				currentLine = 0;
-			}
-			RaiseScreenUpdated();
-		}
-
-		public void ScrollPageDownwards(int linesToScroll)
-		{
 			currentLine += linesToScroll;
 
 			int linesToAdd = currentLine + size.Rows - screen.Count;
 			for (int i = 0; i < linesToAdd; ++i)
 			{
 				screen.Add(InitializeEmptyLine());
+			}
+			RaiseScreenUpdated();
+		}
+
+		public void ScrollPageDownwards(int linesToScroll)
+		{
+			currentLine -= linesToScroll;
+			if (currentLine < 0)
+			{
+				currentLine = 0;
 			}
 			RaiseScreenUpdated();
 		}

@@ -21,6 +21,7 @@ function initNewLine() {
 }
 
 var specialKeys = {
+	13: [13, 10],
 	33: [27, 91, 53, 126],
     34: [27, 91, 54, 126],
     35: [27, 79, 70],
@@ -49,6 +50,9 @@ function handleConsoleKeyDown(e) {
 		e.preventDefault();
 	} else if (e.keyCode in specialKeys) {
     	vmServer.processChunkInput(nodeId, specialKeys[e.keyCode]);
+    	e.preventDefault();
+    } else if (e.keyCode <= 32) {
+    	vmServer.processInput(nodeId, e.keyCode);
     	e.preventDefault();
     }
 }

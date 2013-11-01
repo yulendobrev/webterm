@@ -67,18 +67,10 @@ namespace ErlangVMA.TerminalEmulation
 
 				var inputBytes = symbols.ToArray();
 
+				terminalStreamDecoder.ProcessInput(symbols);
+
 				inputStream.Write(inputBytes, 0, inputBytes.Length);
 				inputStream.Flush();
-
-				for (int i = 0; i < inputBytes.Length; ++i)
-				{
-					if (inputBytes[i] == 13)
-					{
-						inputBytes[i] = 10;
-					}
-				}
-
-				terminalStreamDecoder.ProcessInput(symbols);
 			}
 			finally
 			{

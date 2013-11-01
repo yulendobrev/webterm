@@ -52,7 +52,7 @@ namespace ErlangVMA.TerminalEmulation
 				{ BellCharacter, () => interpreter.RingBell() },
 				{ BackspaceCharacter, () => interpreter.MoveCursor(Direction.Backward, 1) },
 				{ HorizontalTabCharacter, () => interpreter.MoveCursorToNextTabStop() },
-				{ LineFeedCharacter, () => interpreter.InsertNewLine() },
+				{ LineFeedCharacter, () => { interpreter.InsertNewLine(); interpreter.MoveCursorToColumn(0); } },
 				{ VerticalTabCharacter, () => interpreter.InsertNewLine() },
 				{ FormFeedCharacter, () => interpreter.InsertNewLine() },
 				{ CarriageReturnCharacter, () => interpreter.MoveCursorToColumn(0) },
@@ -230,8 +230,11 @@ namespace ErlangVMA.TerminalEmulation
 
 		private void AppendControlParameter()
 		{
-			controlParameters.Add(escapeCodeBuffer.ToString());
-			escapeCodeBuffer.Clear();
+			if (escapeCodeBuffer.Length > 0)
+			{
+				controlParameters.Add(escapeCodeBuffer.ToString());
+				escapeCodeBuffer.Clear();
+			}
 		}
 
 		private void ProcessControlSequence(string id, List<string> parameters)
