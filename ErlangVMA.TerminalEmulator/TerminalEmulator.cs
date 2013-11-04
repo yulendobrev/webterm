@@ -14,6 +14,8 @@ namespace ErlangVMA.TerminalEmulation
 		private ITerminalDisplay terminalDisplay;
 		private ReaderWriterLockSlim processingLock;
 
+		private FileStream logFile;
+
 		public static TerminalEmulator Create(string executablePath)
 		{
 			var terminalScreen = new TerminalScreen();
@@ -27,6 +29,8 @@ namespace ErlangVMA.TerminalEmulation
 			this.terminalStreamDecoder = terminalStreamDecoder;
 			this.terminalDisplay = terminalDisplay;
 			this.processingLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+
+			this.logFile = new FileStream("output", FileMode.Create | FileMode.Append, FileAccess.Write);
 
 			terminalDisplay.ScreenUpdated += OnScreenUpdated;
 
@@ -121,18 +125,27 @@ namespace ErlangVMA.TerminalEmulation
 			if (outputStream == null)
 				return;
 
-			outputStream.BeginRead(buffer, 0, buffer.Length, ar => {
-				try
-				{
-					int bytesRead = outputStream.EndRead(ar);
-					terminalStreamDecoder.ProcessInput(buffer.Take(bytesRead));
+			try
+			{
+				outputStream.BeginRead(buffer, 0, buffer.Length, ar => {
+					try
+					{
+						int bytesRead = outputStream.EndRead(ar);
+						terminalStreamDecoder.ProcessInput(buffer.Take(bytesRead));
 
-					DoAsyncOutputRead(buffer, outputReader);
-				}
-				catch (ObjectDisposedException)
-				{
-				}
-			}, null);
+						logFile.Write(buffer, 0, bytesRead);
+						logFile.Flush();
+
+						DoAsyncOutputRead(buffer, outputReader);
+					}
+					catch (ObjectDisposedException)
+					{
+					}
+				}, null);
+			}
+			catch (ObjectDisposedException)
+			{
+			}
 		}
 
 		private void HandleExited(object sender, EventArgs e)

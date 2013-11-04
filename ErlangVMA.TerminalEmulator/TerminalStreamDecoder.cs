@@ -8,7 +8,7 @@ namespace ErlangVMA.TerminalEmulation
 	public class TerminalStreamDecoder : ITerminalStreamDecoder
 	{
 		private TerminalInputState inputState;
-		private StringBuilder escapeCodeBuffer;
+		private List<byte> escapeCodeBuffer;
 		private List<string> controlParameters;
 		private Dictionary<byte, Action> specialSymbolActions;
 		private ITerminalCommandInterpreter interpreter;
@@ -44,7 +44,7 @@ namespace ErlangVMA.TerminalEmulation
 			Action ignoreSymbol = () => { };
 
 			this.inputState = TerminalInputState.Normal;
-			this.escapeCodeBuffer = new StringBuilder();
+			this.escapeCodeBuffer = new List<byte>();
 			this.controlParameters = new List<string>();
 			this.specialSymbolActions = new Dictionary<byte, Action>()
 			{
@@ -111,19 +111,22 @@ namespace ErlangVMA.TerminalEmulation
 
 		private void ProcessEscapeSequenceInput(byte @byte)
 		{
-			if (@byte == LeftBracketCharacter && escapeCodeBuffer.Length == 0)
+			if (@byte == LeftBracketCharacter && !escapeCodeBuffer.Any())
 			{
 				inputState = TerminalInputState.ControlSequence;
 			}
 			else if (0x20 <= @byte && @byte <= 0x2F)
 			{
-				escapeCodeBuffer.Append(@byte);
+				AddCurrentControlParameterByte(@byte);
 			}
 			else if (0x30 <= @byte && @byte <= 0x7E)
 			{
-				escapeCodeBuffer.Append(Encoding.ASCII.GetString(new [] { @byte }));
-				ProcessEscapeSequence(escapeCodeBuffer.ToString());
-				escapeCodeBuffer.Clear();
+				AddCurrentControlParameterByte(@byte);
+
+				string parameterValue = GetCurrentControlParameterValue();
+				ProcessEscapeSequence(parameterValue);
+
+				ClearCurrentControlParameterBuffer();
 
 				inputState = TerminalInputState.Normal;
 			}
@@ -199,7 +202,7 @@ namespace ErlangVMA.TerminalEmulation
 			{
 				if (@byte != ParameterDelimiterCharacter)
 				{
-					escapeCodeBuffer.Append(@byte);
+					AddCurrentControlParameterByte(@byte);
 				}
 				else
 				{
@@ -210,7 +213,7 @@ namespace ErlangVMA.TerminalEmulation
 			{
 				AppendControlParameter();
 				ProcessControlSequence(Encoding.ASCII.GetString(new [] { @byte }), controlParameters);
-				controlParameters.Clear();
+				ClearControlParameters();
 
 				inputState = TerminalInputState.Normal;
 			}
@@ -230,11 +233,32 @@ namespace ErlangVMA.TerminalEmulation
 
 		private void AppendControlParameter()
 		{
-			if (escapeCodeBuffer.Length > 0)
+			if (escapeCodeBuffer.Any())
 			{
-				controlParameters.Add(escapeCodeBuffer.ToString());
+				string parameterValue = GetCurrentControlParameterValue();
+				controlParameters.Add(parameterValue);
 				escapeCodeBuffer.Clear();
 			}
+		}
+
+		private void ClearControlParameters()
+		{
+			controlParameters.Clear();
+		}
+
+		private void AddCurrentControlParameterByte(byte @byte)
+		{
+			escapeCodeBuffer.Add(@byte);
+		}
+
+		private string GetCurrentControlParameterValue()
+		{
+			return Encoding.ASCII.GetString(escapeCodeBuffer.ToArray());
+		}
+
+		private void ClearCurrentControlParameterBuffer()
+		{
+			escapeCodeBuffer.Clear();
 		}
 
 		private void ProcessControlSequence(string id, List<string> parameters)
@@ -272,10 +296,10 @@ namespace ErlangVMA.TerminalEmulation
 					interpreter.MoveCursorTo(new Point() { Row = DecodeInteger(parameters, 0, 1) - 1, Column = DecodeInteger(parameters, 1, 1) - 1 });
 					break;
 				case "K":
-					interpreter.ClearLine(parameters.Select(p => (ClearDirection)int.Parse(p)).FirstOrDefault());
+					interpreter.ClearLine((ClearDirection)DecodeInteger(parameters, 0));
 					break;
 				case "J":
-					interpreter.ClearScreen(parameters.Select(p => (ClearDirection)int.Parse(p)).FirstOrDefault());
+					interpreter.ClearScreen((ClearDirection)DecodeInteger(parameters, 0));
 					break;
 				case "h":
 					string parameter = parameters.FirstOrDefault();
