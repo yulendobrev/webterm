@@ -25,6 +25,11 @@ namespace ErlangVMA.TerminalEmulation
 		}
 
 		public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay)
+			: this(executablePath, string.Empty, terminalStreamDecoder, terminalDisplay)
+		{
+		}
+
+		public TerminalEmulator(string executablePath, string arguments, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay)
 		{
 			this.terminalStreamDecoder = terminalStreamDecoder;
 			this.terminalDisplay = terminalDisplay;
@@ -39,6 +44,7 @@ namespace ErlangVMA.TerminalEmulation
 //			if (!string.IsNullOrEmpty (username))
 //				startInfo.Arguments = string.Format ("-sname \"{0}\"", CommandLineEscape (username));
 
+			startInfo.Arguments = arguments;
 			startInfo.UseShellExecute = false;
 			startInfo.RedirectStandardError = true;
 			startInfo.RedirectStandardInput = true;
@@ -71,10 +77,14 @@ namespace ErlangVMA.TerminalEmulation
 
 				var inputBytes = symbols.ToArray();
 
-				terminalStreamDecoder.ProcessInput(symbols);
+				//Do this only in echo mode
+				//terminalStreamDecoder.ProcessInput(symbols);
 
 				inputStream.Write(inputBytes, 0, inputBytes.Length);
 				inputStream.Flush();
+			}
+			catch (IOException)
+			{
 			}
 			finally
 			{

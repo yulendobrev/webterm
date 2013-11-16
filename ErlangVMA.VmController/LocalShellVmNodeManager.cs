@@ -23,8 +23,9 @@ namespace ErlangVMA.VmController
 		{
 			var terminalScreen = new TerminalScreen();
 			var terminalStreamDecoder = new TerminalStreamDecoder(terminalScreen);
-			var terminalEmulator = new TerminalEmulator("/usr/bin/vim", terminalStreamDecoder, terminalScreen);
-			//var terminalEmulator = new TerminalEmulator("/usr/bin/erl", terminalStreamDecoder, terminalScreen);
+			//var terminalEmulator = new TerminalEmulator("/usr/bin/vim", terminalStreamDecoder, terminalScreen);
+			//var terminalEmulator = new TerminalEmulator("/bin/bash", "-i -c \"/usr/bin/vim\"", terminalStreamDecoder, terminalScreen);
+			var terminalEmulator = new TerminalEmulator("/bin/bash", "-i", terminalStreamDecoder, terminalScreen);
 			var nodeId = new VmNodeId(terminalEmulator.Id);
 
 			terminalEmulator.ScreenUpdated += s => RaiseScreenUpdated(nodeId, s);

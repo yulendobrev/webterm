@@ -20,6 +20,12 @@ function initNewLine() {
     return line;
 }
 
+function resizeToFit(element) {
+	var $element = $(element);
+	$element.width(element.scrollWidth + "px");
+	$element.height(element.scrollHeight + "px");
+}
+
 var specialKeys = {
 	13: [13, 10],
 	33: [27, 91, 53, 126],
@@ -51,7 +57,7 @@ function handleConsoleKeyDown(e) {
 	} else if (e.keyCode in specialKeys) {
     	vmServer.processChunkInput(nodeId, specialKeys[e.keyCode]);
     	e.preventDefault();
-    } else if (e.keyCode <= 32) {
+    } else if (!e.shiftKey && e.keyCode <= 32) {
     	vmServer.processInput(nodeId, e.keyCode);
     	e.preventDefault();
     }
@@ -62,20 +68,32 @@ function getRow(n) {
 	return vmConsoleDisplay.children[n];
 }
 
-function updateCursorPosition(cursorPosition) {
-	var row = getRow(cursorPosition.Row);
-	var char = row.textContent[cursorPosition.Column];
-	cursor.textContent = char;
+(function() {
+	var oldPosition;
+
+	updateCursorPosition = function (cursorPosition) {
+		if (oldPosition && oldPosition.Row != cursorPosition.Row) {
+			var oldRow = getRow(oldPosition.Row);
+			oldRow.innerHTML = oldRow.textContent.slice(0, oldPosition.Column) + cursor.textContent + oldRow.textContent.slice(oldPosition.Column + 1, 80);
+		}
 	
-	row.innerHTML = row.textContent.slice(0, cursorPosition.Column) + cursor.outerHTML + row.textContent.slice(cursorPosition.Column + 1, 80)
-}
+		var row = getRow(cursorPosition.Row);
+		var char = row.textContent[cursorPosition.Column];
+		cursor.textContent = char;
+	
+		row.innerHTML = row.textContent.slice(0, cursorPosition.Column) + cursor.outerHTML + row.textContent.slice(cursorPosition.Column + 1, 80);
+		
+		resetBlinkingCursor();
+		oldPosition = { Row: cursorPosition.Row, Column: cursorPosition.Column };
+	}
+})();
 
 (function () {
 	var blinkTimerId;
 
 	resetBlinkingCursor = function () {
     	stopBlinkingCursor();
-    	blinkTimerId = setInterval(function () { $(cursor).toggleClass("cursor") }, 500);
+    	blinkTimerId = setInterval(function () { $("#cursor").toggleClass("cursor") }, 500);
 	}
 
 	stopBlinkingCursor = function () {
@@ -83,6 +101,8 @@ function updateCursorPosition(cursorPosition) {
 			clearInterval(blinkTimerId);
 		}
 	
+		cursor = document.getElementById("cursor");
+		
 		if (!$(cursor).hasClass("cursor")) {
         	$(cursor).addClass("cursor");
         }
@@ -102,9 +122,11 @@ function updateCursorPosition(cursorPosition) {
         }
         
         cursor = document.createElement("span");
+        cursor.id = "cursor";
         $(cursor).addClass("cursor");
         
         updateCursorPosition({Row: 0, Column: 0});
+        resizeToFit(vmConsoleDisplay);
         
         $(vmConsoleArea).keydown(handleConsoleKeyDown)
         $(vmConsoleArea).keyup(function (e) {

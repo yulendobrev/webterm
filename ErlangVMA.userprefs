@@ -1,22 +1,26 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulator/TerminalScreen.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulator/TerminalEmulator.cs">
     <Files>
-      <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="24" Column="15" />
+      <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="27" Column="2" />
       <File FileName="ErlangVMA/Hubs/VirtualMachineHub.cs" Line="70" Column="73" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="24" Column="87" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="250" Column="5" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="190" Column="13" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="133" Column="4" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="253" Column="4" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="284" Column="12" />
       <File FileName="ErlangVMA/Scripts/vmconsole.input.js" Line="78" Column="25" />
       <File FileName="ErlangVMA/Views/Home/Index.aspx" Line="16" Column="78" />
-      <File FileName="ErlangVMA.VmController/LocalShellVmNodeManager.cs" Line="26" Column="39" />
+      <File FileName="ErlangVMA.VmController/LocalShellVmNodeManager.cs" Line="27" Column="82" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
+          <Node name="ErlangVMA" expanded="True">
+            <Node name="Hubs" expanded="True" />
+            <Node name="Scripts" expanded="True" />
+          </Node>
           <Node name="ErlangVMA.TerminalEmulation" expanded="True">
             <Node name="Entities" expanded="True" />
-            <Node name="TerminalScreen.cs" selected="True" />
+            <Node name="TerminalEmulator.cs" selected="True" />
           </Node>
           <Node name="ErlangVMA.VmController" expanded="True" />
         </State>
