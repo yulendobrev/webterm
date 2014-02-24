@@ -12,7 +12,7 @@ namespace ErlangVMA.VmController
 	{
 		private Dictionary<VmNodeId, TerminalEmulator> terminalEmulators;
 
-		public LocalShellVmNodeManager ()
+		public LocalShellVmNodeManager()
 		{
 			terminalEmulators = new Dictionary<VmNodeId, TerminalEmulator>();
 		}
@@ -23,9 +23,10 @@ namespace ErlangVMA.VmController
 		{
 			var terminalScreen = new TerminalScreen();
 			var terminalStreamDecoder = new TerminalStreamDecoder(terminalScreen);
+			var pseudoTerminal = new UnixPseudoTerminal();
 			//var terminalEmulator = new TerminalEmulator("/usr/bin/vim", terminalStreamDecoder, terminalScreen);
 			//var terminalEmulator = new TerminalEmulator("/bin/bash", "-i -c \"/usr/bin/vim\"", terminalStreamDecoder, terminalScreen);
-			var terminalEmulator = new TerminalEmulator("/bin/bash", "-i", terminalStreamDecoder, terminalScreen);
+			var terminalEmulator = new TerminalEmulator("/bin/bash", new[] { "-i" }, terminalStreamDecoder, terminalScreen, pseudoTerminal);
 			var nodeId = new VmNodeId(terminalEmulator.Id);
 
 			terminalEmulator.ScreenUpdated += s => RaiseScreenUpdated(nodeId, s);

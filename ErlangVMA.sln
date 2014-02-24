@@ -7,12 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErlangVMA.VmController", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErlangVMA.TerminalEmulation", "ErlangVMA.TerminalEmulator\ErlangVMA.TerminalEmulation.csproj", "{BF048058-8AE8-4CB3-8882-717C9634A48A}"
 EndProject
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ErlangVMA.TerminalEmulation.PseudoTerminalWrapper", "ErlangVMA.TerminalEmulation.PseudoTerminalWrapper\ErlangVMA.TerminalEmulation.PseudoTerminalWrapper.cproj", "{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74961AFC-2CC1-40B9-A509-1E6923799462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74961AFC-2CC1-40B9-A509-1E6923799462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74961AFC-2CC1-40B9-A509-1E6923799462}.Release|Any CPU.ActiveCfg = Release|Any CPU

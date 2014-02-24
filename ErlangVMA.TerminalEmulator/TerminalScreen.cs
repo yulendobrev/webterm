@@ -53,6 +53,8 @@ namespace ErlangVMA.TerminalEmulation
 
 			foreach (char symbol in symbols)
 			{
+				EnsureScreenLines();
+
 				screen[currentLine + cursorPosition.Row][cursorPosition.Column] = new TerminalScreenCharacter(symbol, currentRendition.Clone());
 				++cursorPosition.Column;
 
@@ -457,6 +459,16 @@ namespace ErlangVMA.TerminalEmulation
 		{
 			var screen = GetScreenData(0, 0, size.Columns, size.Rows);
 			return screen;
+		}
+
+		private void EnsureScreenLines()
+		{
+			int linesToAdd = currentLine + cursorPosition.Row - screen.Count + 1;
+
+			for (int i = 0; i < linesToAdd; ++i)
+			{
+				screen.Add(InitializeEmptyLine());
+			}
 		}
 
 		private void RaiseCursorPositionChanged()

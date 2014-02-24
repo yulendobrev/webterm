@@ -9,9 +9,12 @@ namespace ErlangVMA.TerminalEmulation
 {
 	public class TerminalEmulator
 	{
-		private Process process;
 		private ITerminalStreamDecoder terminalStreamDecoder;
 		private ITerminalDisplay terminalDisplay;
+		private IPseudoTerminal pseudoTerminal;
+
+		private Stream inputStream;
+
 		private ReaderWriterLockSlim processingLock;
 
 		private FileStream logFile;
@@ -20,50 +23,37 @@ namespace ErlangVMA.TerminalEmulation
 		{
 			var terminalScreen = new TerminalScreen();
 			var terminalStreamDecoder = new TerminalStreamDecoder(terminalScreen);
+			var pseudoTerminal = new UnixPseudoTerminal();
 
-			return new TerminalEmulator(executablePath, terminalStreamDecoder, terminalScreen);
+			return new TerminalEmulator(executablePath, terminalStreamDecoder, terminalScreen, pseudoTerminal);
 		}
 
-		public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay)
-			: this(executablePath, string.Empty, terminalStreamDecoder, terminalDisplay)
+		public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
+			: this(executablePath, new string[0], terminalStreamDecoder, terminalDisplay, pseudoTerminal)
 		{
 		}
 
-		public TerminalEmulator(string executablePath, string arguments, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay)
+		public TerminalEmulator(string executablePath, string[] arguments, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
 		{
 			this.terminalStreamDecoder = terminalStreamDecoder;
 			this.terminalDisplay = terminalDisplay;
+			this.pseudoTerminal = pseudoTerminal;
+
 			this.processingLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
 			this.logFile = new FileStream("output", FileMode.Create | FileMode.Append, FileAccess.Write);
 
 			terminalDisplay.ScreenUpdated += OnScreenUpdated;
+			var streams = pseudoTerminal.CreatePseudoTerminal(executablePath, arguments);
 
-			var startInfo = new ProcessStartInfo(executablePath);
+			inputStream = streams.InputStream;
 
-//			if (!string.IsNullOrEmpty (username))
-//				startInfo.Arguments = string.Format ("-sname \"{0}\"", CommandLineEscape (username));
-
-			startInfo.Arguments = arguments;
-			startInfo.UseShellExecute = false;
-			startInfo.RedirectStandardError = true;
-			startInfo.RedirectStandardInput = true;
-			startInfo.RedirectStandardOutput = true;
-
-			process = new Process();
-			process.StartInfo = startInfo;
-			process.EnableRaisingEvents = true;
-
-			process.Exited += HandleExited;
-
-			process.Start();
-			BeginAsyncOutputRead(process.StandardOutput);
-			BeginAsyncOutputRead(process.StandardError);
+			BeginAsyncOutputRead(streams.OutputStream);
 		}
 
 		public int Id
 		{
-			get { return process.Id; }
+			get { return 0; }
 		}
 		
 		public event Action<ScreenData> ScreenUpdated;
@@ -73,12 +63,7 @@ namespace ErlangVMA.TerminalEmulation
 			processingLock.EnterWriteLock();
 			try
 			{
-				var inputStream = process.StandardInput.BaseStream;
-
 				var inputBytes = symbols.ToArray();
-
-				//Do this only in echo mode
-				//terminalStreamDecoder.ProcessInput(symbols);
 
 				inputStream.Write(inputBytes, 0, inputBytes.Length);
 				inputStream.Flush();
@@ -121,17 +106,15 @@ namespace ErlangVMA.TerminalEmulation
 			return escapedUsername;
 		}
 
-		private void BeginAsyncOutputRead(StreamReader outputReader)
+		private void BeginAsyncOutputRead(Stream output)
 		{
 			byte[] buffer = new byte[4096];
 
-			DoAsyncOutputRead(buffer, outputReader);
+			DoAsyncOutputRead(buffer, output);
 		}
 
-		private void DoAsyncOutputRead(byte[] buffer, StreamReader outputReader)
+		private void DoAsyncOutputRead(byte[] buffer, Stream outputStream)
 		{
-			var outputStream = outputReader.BaseStream;
-
 			if (outputStream == null)
 				return;
 
@@ -146,7 +129,7 @@ namespace ErlangVMA.TerminalEmulation
 						logFile.Write(buffer, 0, bytesRead);
 						logFile.Flush();
 
-						DoAsyncOutputRead(buffer, outputReader);
+						DoAsyncOutputRead(buffer, outputStream);
 					}
 					catch (ObjectDisposedException)
 					{
@@ -156,17 +139,6 @@ namespace ErlangVMA.TerminalEmulation
 			catch (ObjectDisposedException)
 			{
 			}
-		}
-
-		private void HandleExited(object sender, EventArgs e)
-		{
-			process.Dispose();
-			process = null;
-		}
-
-		private bool IsStarted()
-		{
-			return process != null && !process.HasExited;
 		}
 
 		private void RaiseScreenUpdated(ScreenData screenData)
