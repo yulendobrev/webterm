@@ -19,7 +19,7 @@ namespace ErlangVMA.TerminalEmulation
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo(
 				                             "../ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/bin/Debug/ErlangVMA.TerminalEmulation",
-				                             executablePath + string.Join(" ", arguments));
+				                             string.Format("{0} {1}", executablePath, string.Join(" ", arguments)));
 
 			startInfo.RedirectStandardInput = true;
 			startInfo.RedirectStandardOutput = true;

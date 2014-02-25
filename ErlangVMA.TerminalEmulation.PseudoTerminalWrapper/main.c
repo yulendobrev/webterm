@@ -39,6 +39,16 @@ void redirect_stdio_to_child(int masterFd, pid_t child)
 	}
 }
 
+void disable_local_echo()
+{
+	struct termios term;
+	tcgetattr(0, &term);
+
+	term.c_lflag &= ~ICANON & ~ECHO;
+
+	tcsetattr(0, TCSANOW, &term);
+}
+
 int main(int argc, char *argv[])
 {
 	struct termios term;
@@ -67,6 +77,7 @@ int main(int argc, char *argv[])
 	if (child == 0) {
 		execv(argv[1], argv + 1);
 	} else {
+		disable_local_echo();
 		redirect_stdio_to_child(masterFd, child);
 	}
 

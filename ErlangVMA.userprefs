@@ -1,23 +1,18 @@
 ﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/main.c">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulator/UnixPseudoTerminal.cs">
     <Files>
       <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="1" Column="1" />
-      <File FileName="ErlangVMA/Hubs/VirtualMachineHub.cs" Line="1" Column="1" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="1" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="51" Column="1" />
       <File FileName="ErlangVMA/Views/Home/Index.aspx" Line="1" Column="1" />
-      <File FileName="ErlangVMA.VmController/LocalShellVmNodeManager.cs" Line="1" Column="1" />
-      <File FileName="ErlangVMA.TerminalEmulator/UnixPseudoTerminal.cs" Line="151" Column="32" />
-      <File FileName="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/main.c" Line="58" Column="17" />
+      <File FileName="ErlangVMA.TerminalEmulator/UnixPseudoTerminal.cs" Line="31" Column="4" />
+      <File FileName="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/main.c" Line="75" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="ErlangVMA" expanded="True">
-            <Node name="Scripts" expanded="True" />
-          </Node>
-          <Node name="ErlangVMA.TerminalEmulation" expanded="True" />
-          <Node name="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper" expanded="True" selected="True" />
+          <Node name="ErlangVMA.TerminalEmulation" expanded="True" selected="True" />
+          <Node name="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper" expanded="True" />
         </State>
       </Pad>
     </Pads>
@@ -33,7 +28,7 @@
       <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalScreen.cs" line="243" column="1" />
       <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" line="374" column="1" />
       <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" line="434" column="1" />
-      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/UnixPseudoTerminal.cs" line="78" column="1" />
+      <Breakpoint file="/home/jvdobrev/Дипломна работа/ErlangVMA/ErlangVMA.TerminalEmulator/UnixPseudoTerminal.cs" line="38" column="19" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
