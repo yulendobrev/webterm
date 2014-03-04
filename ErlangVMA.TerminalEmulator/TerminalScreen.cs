@@ -74,9 +74,8 @@ namespace ErlangVMA.TerminalEmulation
 		{
 			if (++cursorPosition.Row >= size.Rows)
 			{
-				ScrollPageUpwards(1);
+				ScrollPageUpwardsWithoutUpdate(1);
 				cursorPosition.Row = size.Rows - 1;
-				screen.Add(InitializeEmptyLine());
 				RaiseScreenUpdated();
 			}
 			else
@@ -327,14 +326,14 @@ namespace ErlangVMA.TerminalEmulation
 
 		public void ScrollPageUpwards(int linesToScroll)
 		{
-			currentLine += linesToScroll;
-
-			int linesToAdd = currentLine + size.Rows - screen.Count;
-			for (int i = 0; i < linesToAdd; ++i)
-			{
-				screen.Add(InitializeEmptyLine());
-			}
+			ScrollPageUpwardsWithoutUpdate(linesToScroll);
 			RaiseScreenUpdated();
+		}
+
+		private void ScrollPageUpwardsWithoutUpdate(int linesToScroll)
+		{
+			currentLine += linesToScroll;
+			EnsureScreenLines();
 		}
 
 		public void ScrollPageDownwards(int linesToScroll)
@@ -501,7 +500,7 @@ namespace ErlangVMA.TerminalEmulation
 				Width = width,
 				Height = height,
 				CursorPosition = cursorPosition.Clone(),
-				Data = new char[width * height]
+				Data = new TerminalScreenCharacter[width * height]
 			};
 
 			int destination = 0;
@@ -509,7 +508,7 @@ namespace ErlangVMA.TerminalEmulation
 			{
 				for (int column = x; column < x + width; ++column)
 				{
-					screenData.Data[destination] = screen[currentLine + row][column].Character;
+					screenData.Data[destination] = screen[currentLine + row][column];
 					++destination;
 				}
 			}

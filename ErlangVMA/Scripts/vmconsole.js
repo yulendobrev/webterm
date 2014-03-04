@@ -10,13 +10,14 @@ String.prototype.skip = function (n) {
 
 function initNewLine() {
     var line = document.createElement("div"),
-	    lineContents = "";
+	    cell;
 
 	for (var i = 0; i < 80; ++i) {
-		lineContents += " ";
+		cell = document.createElement("span");
+		cell.textContent = ' ';
+		line.appendChild(cell);
 	}
 
-    line.textContent = lineContents;
     return line;
 }
 
@@ -27,7 +28,7 @@ function resizeToFit(element) {
 }
 
 var specialKeys = {
-	13: [13, 10],
+	16: [],
 	33: [27, 91, 53, 126],
     34: [27, 91, 54, 126],
     35: [27, 79, 70],
@@ -72,17 +73,13 @@ function getRow(n) {
 	var oldPosition;
 
 	updateCursorPosition = function (cursorPosition) {
-		if (oldPosition && oldPosition.Row != cursorPosition.Row) {
-			var oldRow = getRow(oldPosition.Row);
-			oldRow.innerHTML = oldRow.textContent.slice(0, oldPosition.Column) + cursor.textContent + oldRow.textContent.slice(oldPosition.Column + 1, 80);
-		}
-	
+		$(cursor).removeClass("cursor");
+
 		var row = getRow(cursorPosition.Row);
-		var char = row.textContent[cursorPosition.Column];
-		cursor.textContent = char;
-	
-		row.innerHTML = row.textContent.slice(0, cursorPosition.Column) + cursor.outerHTML + row.textContent.slice(cursorPosition.Column + 1, 80);
-		
+		cursor = row.children[cursorPosition.Column];
+
+		$(cursor).addClass("cursor");
+
 		resetBlinkingCursor();
 		oldPosition = { Row: cursorPosition.Row, Column: cursorPosition.Column };
 	}
@@ -93,7 +90,7 @@ function getRow(n) {
 
 	resetBlinkingCursor = function () {
     	stopBlinkingCursor();
-    	blinkTimerId = setInterval(function () { $("#cursor").toggleClass("cursor") }, 500);
+    	blinkTimerId = setInterval(function () { if (cursor) { $(cursor).toggleClass("cursor"); } }, 500);
 	}
 
 	stopBlinkingCursor = function () {
@@ -101,9 +98,7 @@ function getRow(n) {
 			clearInterval(blinkTimerId);
 		}
 	
-		cursor = document.getElementById("cursor");
-		
-		if (!$(cursor).hasClass("cursor")) {
+		if (cursor && $(cursor).hasClass("cursor")) {
         	$(cursor).addClass("cursor");
         }
 	}
@@ -120,11 +115,7 @@ function getRow(n) {
         	var line = initNewLine();
         	vmConsoleDisplay.appendChild(line);
         }
-        
-        cursor = document.createElement("span");
-        cursor.id = "cursor";
-        $(cursor).addClass("cursor");
-        
+
         updateCursorPosition({Row: 0, Column: 0});
         resizeToFit(vmConsoleDisplay);
         
@@ -170,15 +161,26 @@ function getRow(n) {
     	
     	vm.client.updateScreen = function (id, screenData) {
         	var k = 0,
-        		data = screenData.Data.join("");
+        		data = screenData.Data;
         	
         	for (var row = screenData.Y; row < screenData.Y + screenData.Height; ++row) {
-        		var rowDiv = getRow(row),
-        			currentContents = rowDiv.textContent;
+        		var rowDiv = getRow(row);
         			
         		var newContent = data.slice(k, k + screenData.Width);
-        		rowDiv.textContent = currentContents.slice(0, screenData.X) + newContent + currentContents.slice(screenData.X + screenData.Width, 80);
-        			
+				for (var i = 0; i < newContent.length; ++i) {
+					var cell = rowDiv.children[screenData.X + i];
+
+					cell.textContent = newContent[i].Character;
+
+					var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
+					if (newContent[i].Rendition.Foreground != 1) {
+						cell.style.color = colors[newContent[i].Rendition.Foreground];
+					}
+					if (newContent[i].Rendition.Background != 0) {
+						cell.style.backgroundColor = colors[newContent[i].Rendition.Background];
+					}
+        		}
+
         		k += screenData.Width;
         	}
         	
