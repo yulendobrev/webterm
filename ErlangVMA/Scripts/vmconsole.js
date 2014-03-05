@@ -175,9 +175,13 @@ function getRow(n) {
 					var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
 					if (newContent[i].Rendition.Foreground != 1) {
 						cell.style.color = colors[newContent[i].Rendition.Foreground];
+					} else {
+						cell.style.color = "";
 					}
 					if (newContent[i].Rendition.Background != 0) {
 						cell.style.backgroundColor = colors[newContent[i].Rendition.Background];
+					} else {
+						cell.style.backgroundColor = "";
 					}
         		}
 

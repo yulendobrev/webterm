@@ -8,27 +8,24 @@ namespace ErlangVMA.TerminalEmulation
 		private int columns;
 		private int rows;
 
-		public TerminalWindowSize () : this(0, 0)
+		public TerminalWindowSize() : this(0, 0)
 		{
 		}
 
-		public TerminalWindowSize (int columns, int rows)
+		public TerminalWindowSize(int columns, int rows)
 		{
-			Columns = columns;
-			Rows = rows;
+			this.columns = columns;
+			this.rows = rows;
 		}
 
 		public int Columns
 		{
 			get { return columns; }
-			private set { columns = value; }
 		}
 
 		public int Rows
 		{
 			get { return rows; }
-			private set { rows = value; }
 		}
 	}
 }
-

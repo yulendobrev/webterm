@@ -7,6 +7,8 @@ namespace ErlangVMA.TerminalEmulation
 {
 	public class TerminalScreen : ITerminalCommandInterpreter, ITerminalDisplay
 	{
+		private const int maxLines = 250;
+
 		private List<TerminalScreenCharacter[]> screen;
 		private int currentLine;
 		private Point savedCursorPosition;
@@ -462,11 +464,26 @@ namespace ErlangVMA.TerminalEmulation
 
 		private void EnsureScreenLines()
 		{
-			int linesToAdd = currentLine + cursorPosition.Row - screen.Count + 1;
-
+			int linesToAdd = currentLine + size.Rows - screen.Count;
 			for (int i = 0; i < linesToAdd; ++i)
 			{
 				screen.Add(InitializeEmptyLine());
+			}
+
+			if (screen.Count > maxLines)
+			{
+				int displace = screen.Count - maxLines;
+				currentLine -= displace;
+
+				for (int i = 0; i < maxLines; ++i)
+				{
+					screen[i] = screen[i + displace];
+				}
+
+				for (int i = 0; i < displace; ++i)
+				{
+					screen.RemoveAt(maxLines);
+				}
 			}
 		}
 
