@@ -1,7 +1,9 @@
 using System;
+using Newtonsoft.Json;
 
 namespace ErlangVMA.TerminalEmulation
 {
+	[JsonObject]
 	public class TerminalScreenCharacter
 	{
 		private char character;
@@ -13,11 +15,13 @@ namespace ErlangVMA.TerminalEmulation
 			this.rendition = rendition;
 		}
 
+		[JsonProperty("c")]
 		public char Character
 		{
 			get { return character; }
 		}
 
+		[JsonProperty("r")]
 		public ScreenCharacterRendition Rendition
 		{
 			get { return rendition; }

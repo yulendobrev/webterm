@@ -1,42 +1,35 @@
-
-﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Owin;
-using Owin.Builder;
+using Microsoft.Owin.Host.SystemWeb;
 
 namespace ErlangVMA
 {
-	public class MvcApplication : System.Web.HttpApplication
+	public class MvcApplication : HttpApplication
 	{
-		public static void RegisterRoutes (RouteCollection routes)
+		public static void RegisterRoutes(RouteCollection routes)
 		{
-			routes.IgnoreRoute ("{resource}.axd/{*pathInfo}");
-			routes.IgnoreRoute ("VirtualMachineConsole.svc");
+			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+			routes.IgnoreRoute("VirtualMachineConsole.svc");
 
-			routes.MapRoute (
-                "Default",
-                "{controller}/{action}/{id}",
-                new { controller = "Home", action = "Index", id = "" }
+			routes.MapRoute(
+				"Default",
+				"{controller}/{action}/{id}",
+				new { controller = "Home", action = "Index", id = "" }
 			);
-
 		}
 
-		protected void Application_Start ()
+		protected void Application_Start()
 		{
-			var routeHandler = new OwinRouteHandler();
+//			var startup = new Startup();
+//			var routeHandler = new OwinRouteHandler(startup.Configuration);
+//			RouteTable.Routes.Add("signalr", new Route("signalr/{*params}", routeHandler));
 
-			RouteTable.Routes.Add("signalr", new Route("signalr/{*params}", routeHandler));
-
-			(routeHandler.Builder as AppBuilder).Properties = new OwinEnvironment(this);
-			routeHandler.Builder.MapHubs();
-
-			AreaRegistration.RegisterAllAreas ();
-			RegisterRoutes (RouteTable.Routes);
+			AreaRegistration.RegisterAllAreas();
+			RegisterRoutes(RouteTable.Routes);
 		}
 	}
 }

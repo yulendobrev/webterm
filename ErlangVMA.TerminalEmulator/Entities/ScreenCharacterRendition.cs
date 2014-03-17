@@ -1,8 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace ErlangVMA.TerminalEmulation
 {
+	[JsonObject]
 	public class ScreenCharacterRendition
 	{
 		private TerminalFontEffect fontEffects;
@@ -14,16 +16,19 @@ namespace ErlangVMA.TerminalEmulation
 			ResetToDefault();
 		}
 
+		[JsonIgnore]
 		public TerminalFontEffect FontEffects
 		{
 			get { return fontEffects; }
 		}
 
+		[JsonProperty("f")]
 		public TerminalColor Foreground
 		{
 			get { return foregroundColor; }
 		}
 
+		[JsonProperty("b")]
 		public TerminalColor Background
 		{
 			get { return backgroundColor; }
@@ -113,4 +118,3 @@ namespace ErlangVMA.TerminalEmulation
 		}
 	}
 }
-

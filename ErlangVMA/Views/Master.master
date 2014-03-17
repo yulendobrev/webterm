@@ -12,11 +12,10 @@
 	<body>
 		<div id="upperToolbar">
 			<%= Html.Encode(HttpContext.Current.User.Identity.Name) %>
-			<a href="<%= Url.Content("~/Authentication/Logout") %>"><b>Logout</b></a>
+			<a href="~/Authentication/Logout"><b>Logout</b></a>
 		</div>
 		<div id="mainContent">
 			<asp:ContentPlaceHolder ID="MainContent" runat="server" />
 		</div>
 	</body>
 </html>
-

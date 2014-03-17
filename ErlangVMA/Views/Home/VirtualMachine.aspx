@@ -5,10 +5,10 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="AdditionalHead" runat="server">
-	<script type="text/javascript" src="<%= Url.Content("~/Scripts/jquery-2.0.3.js") %>"></script>
-	<script type="text/javascript" src="<%= Url.Content("~/Scripts/jquery.signalR.js") %>"></script>
-	<script type="text/javascript" src="<%= Url.Content("~/signalr/hubs") %>"></script>
-	<script type="text/javascript" src="<%= Url.Content("~/Scripts/vmconsole.js") %>"></script>
+	<script type="text/javascript" src="~/Scripts/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="~/Scripts/jquery.signalR-2.0.2.js"></script>
+	<script type="text/javascript" src="~/signalr/hubs"></script>
+	<script type="text/javascript" src="~/Scripts/vmconsole.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">

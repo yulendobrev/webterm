@@ -17,8 +17,6 @@ namespace ErlangVMA.TerminalEmulation
 
 		private ReaderWriterLockSlim processingLock;
 
-		private FileStream logFile;
-
 		public static TerminalEmulator Create(string executablePath)
 		{
 			var terminalScreen = new TerminalScreen();
@@ -40,8 +38,6 @@ namespace ErlangVMA.TerminalEmulation
 			this.pseudoTerminal = pseudoTerminal;
 
 			this.processingLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-
-			this.logFile = new FileStream("output", FileMode.Create | FileMode.Append, FileAccess.Write);
 
 			terminalDisplay.ScreenUpdated += OnScreenUpdated;
 			var streams = pseudoTerminal.CreatePseudoTerminal(executablePath, arguments);
@@ -125,9 +121,6 @@ namespace ErlangVMA.TerminalEmulation
 					{
 						int bytesRead = outputStream.EndRead(ar);
 						terminalStreamDecoder.ProcessInput(buffer.Take(bytesRead));
-
-						logFile.Write(buffer, 0, bytesRead);
-						logFile.Flush();
 
 						DoAsyncOutputRead(buffer, outputStream);
 					}
