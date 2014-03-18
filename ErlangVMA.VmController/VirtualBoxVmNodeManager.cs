@@ -3,83 +3,110 @@ using System.Diagnostics;
 
 namespace ErlangVMA.VmController
 {
-	public class VirtualBoxVmNodeManager
-	{
-		private const string VBoxManage = "VBoxManage";
+    public class VirtualBoxVmNodeManager : IVmNodeManager
+    {
+        private const string VBoxManage = "VBoxManage";
 
-		private string username;
-		private bool started;
+        private string username;
+        private bool started;
 
-		public VirtualBoxVmNodeManager()
-		{
-		}
+        public VirtualBoxVmNodeManager()
+        {
+        }
 
-		public string VirtualMachineImageName { get; set; }
+        public string VirtualMachineImageName { get; set; }
 
-		public void Initialize(string username)
-		{
-			this.username = username;
-		}
+        public VmNodeId StartNewNode()
+        {
+            throw new NotImplementedException();
+        }
 
-		public void StartNode()
-		{
-			string cloneName = CloneVirtualMachineImage();
-			SetupVirtualMachine(cloneName);
+        public bool IsNodeAlive(VmNodeId address)
+        {
+            throw new NotImplementedException();
+        }
 
-			StartVirtualMachine(cloneName);
+        public void ShutdownNode(VmNodeId address)
+        {
+            throw new NotImplementedException();
+        }
 
-			//WaitForConnection();
-		}
+        public void SendInput(VmNodeId address, System.Collections.Generic.IEnumerable<byte> symbols)
+        {
+            throw new NotImplementedException();
+        }
 
-		private bool DoesVirtualMachineExist(string name)
-		{
-			return ExecuteShellCommand(VBoxManage, string.Format("showvminfo \"{0}\"", name)) != 0;
-		}
+        public event Action<VmNodeId, TerminalEmulation.ScreenData> ScreenUpdated;
 
-		private string CloneVirtualMachineImage()
-		{
-			string virtualMachineName = string.Format("{0} - {1}", VirtualMachineImageName, username);
+        public TerminalEmulation.ScreenData GetScreen(VmNodeId nodeId)
+        {
+            throw new NotImplementedException();
+        }
 
-			ExecuteShellCommand(VBoxManage, string.Format("clonevm \"{0}\" --name \"{1}\" --register", VirtualMachineImageName, virtualMachineName));
+        public void Initialize(string username)
+        {
+            this.username = username;
+        }
 
-			return virtualMachineName;
-		}
+        public void StartNode()
+        {
+            string cloneName = CloneVirtualMachineImage();
+            SetupVirtualMachine(cloneName);
 
-		private void SetupVirtualMachine(string virtualMachineName)
-		{
-		}
+            StartVirtualMachine(cloneName);
 
-		private void StartVirtualMachine(string virtualMachineName)
-		{
-			ExecuteShellCommand(VBoxManage, string.Format("startvm \"{0}\" --type headless", virtualMachineName));
-			started = true;
-		}
+            //WaitForConnection();
+        }
 
-		private int ExecuteShellCommand(string command, string arguments)
-		{
-			var process = new Process();
-			process.StartInfo.UseShellExecute = true;
-			process.StartInfo.FileName = command;
-			process.StartInfo.Arguments = arguments;
+        private bool DoesVirtualMachineExist(string name)
+        {
+            return ExecuteShellCommand(VBoxManage, string.Format("showvminfo \"{0}\"", name)) != 0;
+        }
 
-			process.Start();
-			process.WaitForExit();
+        private string CloneVirtualMachineImage()
+        {
+            string virtualMachineName = string.Format("{0} - {1}", VirtualMachineImageName, username);
 
-			return process.ExitCode;
-		}
+            ExecuteShellCommand(VBoxManage, string.Format("clonevm \"{0}\" --name \"{1}\" --register", VirtualMachineImageName, virtualMachineName));
 
-		public void SendCommandLine(string commandLine)
-		{
-			if (!started)
-				StartNode();
+            return virtualMachineName;
+        }
 
-			ExecuteShellCommand(VBoxManage, "list vms");
-		}
+        private void SetupVirtualMachine(string virtualMachineName)
+        {
+        }
 
-		public event Action<string> OnOutput;
+        private void StartVirtualMachine(string virtualMachineName)
+        {
+            ExecuteShellCommand(VBoxManage, string.Format("startvm \"{0}\" --type headless", virtualMachineName));
+            started = true;
+        }
 
-		public void ShutdownNode()
-		{
-		}
-	}
+        private int ExecuteShellCommand(string command, string arguments)
+        {
+            var process = new Process();
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.FileName = command;
+            process.StartInfo.Arguments = arguments;
+
+            process.Start();
+            process.WaitForExit();
+
+            return process.ExitCode;
+        }
+
+        public void SendCommandLine(string commandLine)
+        {
+            if (!started)
+                StartNode();
+
+            ExecuteShellCommand(VBoxManage, "list vms");
+        }
+
+        public event Action<string> OnOutput;
+
+        public void ShutdownNode()
+        {
+        }
+    }
 }

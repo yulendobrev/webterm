@@ -10,16 +10,10 @@ namespace ErlangVMA.VmController
 		private IVmNodeManager nodeManager;
 		private List<VmNodeEntry> entries;
 
-		private static VmBroker instance = new VmBroker();
-		public static VmBroker Instance
+		public VmBroker(IVmNodeManager nodeManager)
 		{
-			get	{ return instance; }
-		}
-
-		public VmBroker()
-		{
-			nodeManager = new LocalShellVmNodeManager();
-			entries = new List<VmNodeEntry>();
+			this.nodeManager = nodeManager;
+			this.entries = new List<VmNodeEntry>();
 
 			nodeManager.ScreenUpdated += OnScreenUpdated;
 		}

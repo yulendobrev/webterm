@@ -7,140 +7,120 @@ using System.Threading;
 
 namespace ErlangVMA.TerminalEmulation
 {
-	public class TerminalEmulator
-	{
-		private ITerminalStreamDecoder terminalStreamDecoder;
-		private ITerminalDisplay terminalDisplay;
-		private IPseudoTerminal pseudoTerminal;
+    public class TerminalEmulator
+    {
+        private ITerminalStreamDecoder terminalStreamDecoder;
+        private ITerminalDisplay terminalDisplay;
+        private IPseudoTerminal pseudoTerminal;
 
-		private Stream inputStream;
+        private ReaderWriterLockSlim processingLock;
+        private Stream inputStream;
 
-		private ReaderWriterLockSlim processingLock;
+        public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
+            : this(executablePath, new string[0], terminalStreamDecoder, terminalDisplay, pseudoTerminal)
+        {
+        }
 
-		public static TerminalEmulator Create(string executablePath)
-		{
-			var terminalScreen = new TerminalScreen();
-			var terminalStreamDecoder = new TerminalStreamDecoder(terminalScreen);
-			var pseudoTerminal = new UnixPseudoTerminal();
+        public TerminalEmulator(string executablePath, string[] arguments, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
+        {
+            this.terminalStreamDecoder = terminalStreamDecoder;
+            this.terminalDisplay = terminalDisplay;
+            this.pseudoTerminal = pseudoTerminal;
 
-			return new TerminalEmulator(executablePath, terminalStreamDecoder, terminalScreen, pseudoTerminal);
-		}
+            this.processingLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
-		public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
-			: this(executablePath, new string[0], terminalStreamDecoder, terminalDisplay, pseudoTerminal)
-		{
-		}
+            terminalDisplay.ScreenUpdated += OnScreenUpdated;
+            var streams = pseudoTerminal.CreatePseudoTerminal(executablePath, arguments);
 
-		public TerminalEmulator(string executablePath, string[] arguments, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
-		{
-			this.terminalStreamDecoder = terminalStreamDecoder;
-			this.terminalDisplay = terminalDisplay;
-			this.pseudoTerminal = pseudoTerminal;
+            this.inputStream = streams.InputStream;
 
-			this.processingLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            BeginAsyncOutputRead(streams.OutputStream);
+        }
 
-			terminalDisplay.ScreenUpdated += OnScreenUpdated;
-			var streams = pseudoTerminal.CreatePseudoTerminal(executablePath, arguments);
+        public int Id
+        {
+            get { return 0; }
+        }
+        
+        public event Action<ScreenData> ScreenUpdated;
 
-			inputStream = streams.InputStream;
+        public void Input(IEnumerable<byte> symbols)
+        {
+            processingLock.EnterWriteLock();
+            try
+            {
+                var inputBytes = symbols.ToArray();
 
-			BeginAsyncOutputRead(streams.OutputStream);
-		}
+                inputStream.Write(inputBytes, 0, inputBytes.Length);
+                inputStream.Flush();
+            }
+            catch (IOException)
+            {
+            }
+            finally
+            {
+                processingLock.ExitWriteLock();
+            }
+        }
 
-		public int Id
-		{
-			get { return 0; }
-		}
-		
-		public event Action<ScreenData> ScreenUpdated;
+        public ScreenData GetScreen()
+        {
+            processingLock.EnterReadLock();
+            try
+            {
+                var screen = terminalDisplay.GetWholeScreen();
+                return screen;
+            }
+            finally
+            {
+                processingLock.ExitReadLock();
+            }
+        }
 
-		public void Input(IEnumerable<byte> symbols)
-		{
-			processingLock.EnterWriteLock();
-			try
-			{
-				var inputBytes = symbols.ToArray();
+        private void OnScreenUpdated(ScreenData screenData)
+        {
+            RaiseScreenUpdated(screenData);
+        }
 
-				inputStream.Write(inputBytes, 0, inputBytes.Length);
-				inputStream.Flush();
-			}
-			catch (IOException)
-			{
-			}
-			finally
-			{
-				processingLock.ExitWriteLock();
-			}
-		}
+        private void BeginAsyncOutputRead(Stream output)
+        {
+            byte[] buffer = new byte[4096];
 
-		public ScreenData GetScreen()
-		{
-			processingLock.EnterReadLock();
-			try
-			{
-				var screen = terminalDisplay.GetWholeScreen();
-				return screen;
-			}
-			finally
-			{
-				processingLock.ExitReadLock();
-			}
-		}
+            DoAsyncOutputRead(buffer, output);
+        }
 
-		private void OnScreenUpdated(ScreenData screenData)
-		{
-			RaiseScreenUpdated(screenData);
-		}
+        private void DoAsyncOutputRead(byte[] buffer, Stream outputStream)
+        {
+            if (outputStream == null)
+                return;
 
-		private string CommandLineEscape(string username)
-		{
-			string escapedUsername = new string (
-				(from c in username
-				 select Char.IsLetterOrDigit (c) || Char.IsWhiteSpace (c) ? c : '_').ToArray()
-			);
+            try
+            {
+                outputStream.BeginRead(buffer, 0, buffer.Length, ar => {
+                    try
+                    {
+                        int bytesRead = outputStream.EndRead(ar);
+                        terminalStreamDecoder.ProcessInput(buffer.Take(bytesRead));
 
-			return escapedUsername;
-		}
+                        DoAsyncOutputRead(buffer, outputStream);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                    }
+                }, null);
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
 
-		private void BeginAsyncOutputRead(Stream output)
-		{
-			byte[] buffer = new byte[4096];
-
-			DoAsyncOutputRead(buffer, output);
-		}
-
-		private void DoAsyncOutputRead(byte[] buffer, Stream outputStream)
-		{
-			if (outputStream == null)
-				return;
-
-			try
-			{
-				outputStream.BeginRead(buffer, 0, buffer.Length, ar => {
-					try
-					{
-						int bytesRead = outputStream.EndRead(ar);
-						terminalStreamDecoder.ProcessInput(buffer.Take(bytesRead));
-
-						DoAsyncOutputRead(buffer, outputStream);
-					}
-					catch (ObjectDisposedException)
-					{
-					}
-				}, null);
-			}
-			catch (ObjectDisposedException)
-			{
-			}
-		}
-
-		private void RaiseScreenUpdated(ScreenData screenData)
-		{
-			var handler = ScreenUpdated;
-			if (handler != null)
-			{
-				handler(screenData);
-			}
-		}
-	}
+        private void RaiseScreenUpdated(ScreenData screenData)
+        {
+            var handler = ScreenUpdated;
+            if (handler != null)
+            {
+                handler(screenData);
+            }
+        }
+    }
 }

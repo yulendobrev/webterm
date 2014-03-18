@@ -8,70 +8,67 @@ using System.Collections.Generic;
 
 namespace ErlangVMA.VmController
 {
-	public class LocalShellVmNodeManager : IVmNodeManager
-	{
-		private Dictionary<VmNodeId, TerminalEmulator> terminalEmulators;
+    public class LocalShellVmNodeManager : IVmNodeManager
+    {
+        private Dictionary<VmNodeId, TerminalEmulator> terminalEmulators;
+        private ITerminalEmulatorFactory terminalEmulatorFactory;
 
-		public LocalShellVmNodeManager()
-		{
-			terminalEmulators = new Dictionary<VmNodeId, TerminalEmulator>();
-		}
+        public LocalShellVmNodeManager(ITerminalEmulatorFactory terminalEmulatorFactory)
+        {
+            this.terminalEmulatorFactory = terminalEmulatorFactory;
+            this.terminalEmulators = new Dictionary<VmNodeId, TerminalEmulator>();
+        }
 
-		public event Action<VmNodeId, ScreenData> ScreenUpdated;
+        public event Action<VmNodeId, ScreenData> ScreenUpdated;
 
-		public VmNodeId StartNewNode()
-		{
-			var terminalScreen = new TerminalScreen();
-			var terminalStreamDecoder = new TerminalStreamDecoder(terminalScreen);
-			var pseudoTerminal = new UnixPseudoTerminal();
-			//var terminalEmulator = new TerminalEmulator("/usr/bin/vim", terminalStreamDecoder, terminalScreen);
-			//var terminalEmulator = new TerminalEmulator("/bin/bash", "-i -c \"/usr/bin/vim\"", terminalStreamDecoder, terminalScreen);
-			var terminalEmulator = new TerminalEmulator("/bin/bash", new[] { "-i" }, terminalStreamDecoder, terminalScreen, pseudoTerminal);
-			var nodeId = new VmNodeId(terminalEmulator.Id);
+        public VmNodeId StartNewNode()
+        {
+            var terminalEmulator = terminalEmulatorFactory.CreateTerminalEmulator();
+            var nodeId = new VmNodeId(terminalEmulator.Id);
 
-			terminalEmulator.ScreenUpdated += s => RaiseScreenUpdated(nodeId, s);
+            terminalEmulator.ScreenUpdated += s => RaiseScreenUpdated(nodeId, s);
 
-			terminalEmulators.Add(nodeId, terminalEmulator);
+            terminalEmulators.Add(nodeId, terminalEmulator);
 
-			return nodeId;
-		}
+            return nodeId;
+        }
 
-		public bool IsNodeAlive(VmNodeId address)
-		{
-			return true;
-		}
+        public bool IsNodeAlive(VmNodeId address)
+        {
+            return true;
+        }
 
-		public void ShutdownNode(VmNodeId address)
-		{
-		}
+        public void ShutdownNode(VmNodeId address)
+        {
+        }
 
-		public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
-		{
-			var terminalEmulator = GetTerminalEmulator(address);
-			terminalEmulator.Input(symbols);
-		}
+        public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
+        {
+            var terminalEmulator = GetTerminalEmulator(address);
+            terminalEmulator.Input(symbols);
+        }
 
-		public ScreenData GetScreen(VmNodeId address)
-		{
-			var terminalEmulator = GetTerminalEmulator(address);
-			var screen = terminalEmulator.GetScreen();
+        public ScreenData GetScreen(VmNodeId address)
+        {
+            var terminalEmulator = GetTerminalEmulator(address);
+            var screen = terminalEmulator.GetScreen();
 
-			return screen;
-		}
+            return screen;
+        }
 
-		private TerminalEmulator GetTerminalEmulator(VmNodeId address)
-		{
-			return terminalEmulators[address];
-		}
+        private TerminalEmulator GetTerminalEmulator(VmNodeId address)
+        {
+            return terminalEmulators[address];
+        }
 
-		private void RaiseScreenUpdated(VmNodeId nodeId, ScreenData screenData)
-		{
-			var screenUpdatedHandler = ScreenUpdated;
-			if (screenUpdatedHandler != null)
-			{
-				screenUpdatedHandler(nodeId, screenData);
-			}
-		}
-	}
+        private void RaiseScreenUpdated(VmNodeId nodeId, ScreenData screenData)
+        {
+            var screenUpdatedHandler = ScreenUpdated;
+            if (screenUpdatedHandler != null)
+            {
+                screenUpdatedHandler(nodeId, screenData);
+            }
+        }
+    }
 }
 

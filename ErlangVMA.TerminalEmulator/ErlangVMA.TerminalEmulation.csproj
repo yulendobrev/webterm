@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ITerminalEmulatorFactory.cs" />
+    <Compile Include="UnixTerminalEmulatorFactory.cs" />
     <Compile Include="TerminalStreamDecoder.cs" />
     <Compile Include="TerminalScreen.cs" />
     <Compile Include="TerminalScreenCharacter.cs" />
