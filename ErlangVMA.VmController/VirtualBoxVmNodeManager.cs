@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ErlangVMA.VmController
@@ -31,7 +32,7 @@ namespace ErlangVMA.VmController
             throw new NotImplementedException();
         }
 
-        public void SendInput(VmNodeId address, System.Collections.Generic.IEnumerable<byte> symbols)
+        public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
         {
             throw new NotImplementedException();
         }
@@ -101,12 +102,6 @@ namespace ErlangVMA.VmController
                 StartNode();
 
             ExecuteShellCommand(VBoxManage, "list vms");
-        }
-
-        public event Action<string> OnOutput;
-
-        public void ShutdownNode()
-        {
         }
     }
 }

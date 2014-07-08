@@ -30,6 +30,7 @@ namespace ErlangVMA.TerminalEmulation
             process.Start();
 
             var streams = new PseudoTerminalStreams();
+            streams.ProcessId = process.Id;
             streams.InputStream = process.StandardInput.BaseStream;
             streams.OutputStream = process.StandardOutput.BaseStream;
 

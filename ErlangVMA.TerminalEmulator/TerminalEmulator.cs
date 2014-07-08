@@ -15,6 +15,7 @@ namespace ErlangVMA.TerminalEmulation
 
         private ReaderWriterLockSlim processingLock;
         private Stream inputStream;
+        private int id;
 
         public TerminalEmulator(string executablePath, ITerminalStreamDecoder terminalStreamDecoder, ITerminalDisplay terminalDisplay, IPseudoTerminal pseudoTerminal)
             : this(executablePath, new string[0], terminalStreamDecoder, terminalDisplay, pseudoTerminal)
@@ -32,14 +33,29 @@ namespace ErlangVMA.TerminalEmulation
             terminalDisplay.ScreenUpdated += OnScreenUpdated;
             var streams = pseudoTerminal.CreatePseudoTerminal(executablePath, arguments);
 
+            this.id = streams.ProcessId;
             this.inputStream = streams.InputStream;
-
             BeginAsyncOutputRead(streams.OutputStream);
         }
 
         public int Id
         {
-            get { return 0; }
+            get { return id; }
+        }
+
+        public bool IsAlive
+        {
+            get
+            {
+                try
+                {
+                    return !Process.GetProcessById(id).HasExited;
+                }
+                catch (ArgumentException)
+                {
+                    return false;
+                }
+            }
         }
         
         public event Action<ScreenData> ScreenUpdated;
@@ -77,6 +93,22 @@ namespace ErlangVMA.TerminalEmulation
             }
         }
 
+        public void Shutdown()
+        {
+            try
+            {
+                var process = Process.GetProcessById(id);
+                try
+                {
+                    process.Kill();
+                }
+                catch (InvalidOperationException)
+                { }
+            }
+            catch (ArgumentException)
+            { }
+        }
+
         private void OnScreenUpdated(ScreenData screenData)
         {
             RaiseScreenUpdated(screenData);
@@ -96,7 +128,8 @@ namespace ErlangVMA.TerminalEmulation
 
             try
             {
-                outputStream.BeginRead(buffer, 0, buffer.Length, ar => {
+                outputStream.BeginRead(buffer, 0, buffer.Length, ar =>
+                {
                     try
                     {
                         int bytesRead = outputStream.EndRead(ar);

@@ -1,1 +1,1 @@
-<%@ Application Inherits="ErlangVMA.MvcApplication" %>
+<%@ Application Inherits="ErlangVMA.Web.MvcApplication" %>

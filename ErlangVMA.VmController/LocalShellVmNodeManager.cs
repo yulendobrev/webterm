@@ -10,8 +10,8 @@ namespace ErlangVMA.VmController
 {
     public class LocalShellVmNodeManager : IVmNodeManager
     {
-        private Dictionary<VmNodeId, TerminalEmulator> terminalEmulators;
-        private ITerminalEmulatorFactory terminalEmulatorFactory;
+        private readonly IDictionary<VmNodeId, TerminalEmulator> terminalEmulators;
+        private readonly ITerminalEmulatorFactory terminalEmulatorFactory;
 
         public LocalShellVmNodeManager(ITerminalEmulatorFactory terminalEmulatorFactory)
         {
@@ -35,11 +35,14 @@ namespace ErlangVMA.VmController
 
         public bool IsNodeAlive(VmNodeId address)
         {
-            return true;
+            var terminalEmulator = GetTerminalEmulator(address);
+            return terminalEmulator.IsAlive;
         }
 
         public void ShutdownNode(VmNodeId address)
         {
+            var terminalEmulator = GetTerminalEmulator(address);
+            terminalEmulator.Shutdown();
         }
 
         public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
@@ -58,7 +61,13 @@ namespace ErlangVMA.VmController
 
         private TerminalEmulator GetTerminalEmulator(VmNodeId address)
         {
-            return terminalEmulators[address];
+            TerminalEmulator terminalEmulator;
+            if (!terminalEmulators.TryGetValue(address, out terminalEmulator))
+            {
+                throw new InvalidOperationException(string.Format("Node with id {0} not found", address));
+            }
+
+            return terminalEmulator;
         }
 
         private void RaiseScreenUpdated(VmNodeId nodeId, ScreenData screenData)

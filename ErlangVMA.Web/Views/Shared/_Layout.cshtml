@@ -1,0 +1,22 @@
+﻿@using System.Web.Optimization
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title</title>
+        @Styles.Render("~/default")
+        @Scripts.Render("~/jquery")
+        <script src="@Url.Content("~/signalr/hubs")" type="text/javascript"></script>
+        @Scripts.Render("~/vmconsole")
+    </head>
+    <body>
+        <div id="upperToolbar">
+            @Html.Encode(Context.User.Identity.Name)
+            <a href="@Url.Action("Logout", "Authentication")"><b>Logout</b></a>
+        </div>
+        <div id="mainContent">
+            @RenderBody()
+        </div>
+    </body>
+</html>
