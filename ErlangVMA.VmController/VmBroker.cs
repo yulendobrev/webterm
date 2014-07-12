@@ -1,116 +1,138 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using ErlangVMA.TerminalEmulation;
+using ErlangVMA.VmController.Persistence;
 
 namespace ErlangVMA.VmController
 {
-	public class VmBroker : IVmBroker
-	{
-		private IVmNodeManager nodeManager;
-		private List<VmNodeEntry> entries;
+    public class VmBroker : IVmBroker
+    {
+        private readonly IVmNodeManager nodeManager;
+        private readonly VmNodesDbModel vmNodesDbModel;
 
-		public VmBroker(IVmNodeManager nodeManager)
-		{
-			this.nodeManager = nodeManager;
-			this.entries = new List<VmNodeEntry>();
+        public VmBroker(IVmNodeManager nodeManager, VmNodesDbModel vmNodesDbModel)
+        {
+            this.nodeManager = nodeManager;
+            this.vmNodesDbModel = vmNodesDbModel;
 
-			nodeManager.ScreenUpdated += OnScreenUpdated;
-		}
+            nodeManager.ScreenUpdated += OnScreenUpdated;
+        }
 
-		public event Action<VmUser, VmNodeAddress, ScreenData> ScreenUpdated;
+        public event Action<VmUser, VmNodeAddress, ScreenData> ScreenUpdated;
 
-		public IEnumerable<VmNodeAddress> GetVirtualMachines(VmUser user)
-		{
-			return entries.Where(e => e.user == user).Select(e => e.address).ToList();
-		}
+        public IEnumerable<VirtualMachine> GetVirtualMachines(VmUser user)
+        {
+            var virtualMachines = new List<VirtualMachine>();
 
-		public VmNodeAddress StartNewNode(VmUser user)
-		{
-			var nodeId = nodeManager.StartNewNode();
+            var userNodes = vmNodesDbModel.ActiveVmNodes.Where(n => n.User == user.Username).ToList();
+            foreach (var node in userNodes)
+            {
+                var virtualMachine = new VirtualMachine();
 
-			var address = new VmNodeAddress(VmHostAddress.Local, nodeId);
-			entries.Add(new VmNodeEntry() { user = user, address = address });
+                virtualMachine.Name = node.Name;
+                virtualMachine.NodeAddress = new VmNodeAddress(new VmHostAddress(IPAddress.Parse(node.HostMachine)), new VmNodeId(node.VmNodeId));
+                virtualMachine.StartedOn = node.StartedOn;
+                virtualMachine.IsActive = nodeManager.IsNodeAlive(new VmNodeId(node.VmNodeId));
 
-			return address;
-		}
+                virtualMachines.Add(virtualMachine);
+            }
 
-		public VmNodeAddress StartNewNode(VmUser user, VmHostAddress host)
-		{
-			if (host != VmHostAddress.Local)
-			{
-				throw new ArgumentException("Starting of new nodes allowed only on localhost", "host");
-			}
+            return virtualMachines;
+        }
 
-			return StartNewNode(user);
-		}
+        public VmNodeAddress StartNewNode(VmUser user, VirtualMachineStartOptions startOptions)
+        {
+            var nodeId = nodeManager.StartNewNode();
+            var address = new VmNodeAddress(VmHostAddress.Local, nodeId);
 
-		public void ShutdownNode(VmUser user, VmNodeAddress address)
-		{
-			var entry = GetNodeEntry(user, address);
-			if (entry != null)
-			{
-				nodeManager.ShutdownNode(address.NodeId);
+            vmNodesDbModel.ActiveVmNodes.Add(
+            new VmNodeDbEntry
+            {
+                Name = startOptions.Name,
+                User = user.Username,
+                HostMachine = VmHostAddress.Local.Ip.ToString(),
+                VmNodeId = nodeId.NodeId,
+                StartedOn = DateTime.Now
+            });
+            vmNodesDbModel.SaveChanges();
 
-				entries.Remove(entry);
-			}
-		}
+            return address;
+        }
 
-		public void SendInput(VmUser user, VmNodeAddress address, IEnumerable<byte> symbols)
-		{
-			var entry = GetNodeEntry(user, address);
-			if (entry != null)
-			{
-				nodeManager.SendInput(address.NodeId, symbols);
-			}
-		}
+        public VmNodeAddress StartNewNode(VmUser user, VmHostAddress host, VirtualMachineStartOptions startOptions)
+        {
+            if (host != VmHostAddress.Local)
+            {
+                throw new ArgumentException("Starting of new nodes allowed only on localhost", "host");
+            }
 
-		public ScreenData GetScreen(VmUser user, VmNodeAddress address)
-		{
-			var entry = GetNodeEntry(user, address);
-			if (entry != null)
-			{
-				var screen = nodeManager.GetScreen(address.NodeId);
-				return screen;
-			}
+            return StartNewNode(user, startOptions);
+        }
 
-			return null;
-		}
-		
-		private void OnScreenUpdated(VmNodeId nodeId, ScreenData screenData)
-		{
-			var nodeEntries = GetNodeEntries(new VmNodeAddress(VmHostAddress.Local, nodeId));
-			foreach (var nodeEntry in nodeEntries)
-			{
-				RaiseOnScreenUpdated(nodeEntry.user, nodeEntry.address, screenData);
-			}
-		}
+        public void ShutdownNode(VmUser user, VmNodeAddress address)
+        {
+            var entry = GetVmNodeDbEntry(user, address);
+            if (entry != null)
+            {
+                nodeManager.ShutdownNode(address.NodeId);
 
-		private void RaiseOnScreenUpdated(VmUser user, VmNodeAddress address, ScreenData screenData)
-		{
-			var screenUpdatedHandler = ScreenUpdated;
-			if (screenUpdatedHandler != null)
-			{
-				screenUpdatedHandler(user, address, screenData);
-			}
-		}
+                vmNodesDbModel.ActiveVmNodes.Remove(entry);
+                vmNodesDbModel.SaveChanges();
+            }
+        }
 
-		private IEnumerable<VmNodeEntry> GetNodeEntries(VmNodeAddress address)
-		{
-			var matchingEntries = entries.Where(e => e.address == address).ToList();
-			return matchingEntries;
-		}
+        public void SendInput(VmUser user, VmNodeAddress address, IEnumerable<byte> symbols)
+        {
+            var entry = GetVmNodeDbEntry(user, address);
+            if (entry != null)
+            {
+                nodeManager.SendInput(address.NodeId, symbols);
+            }
+        }
 
-		private VmNodeEntry GetNodeEntry(VmUser user, VmNodeAddress address)
-		{
-			var entry = entries.FirstOrDefault(e => e.user == user && e.address == address);
-			return entry;
-		}
+        public ScreenData GetScreen(VmUser user, VmNodeAddress address)
+        {
+            var entry = GetVmNodeDbEntry(user, address);
+            if (entry != null)
+            {
+                var screen = nodeManager.GetScreen(address.NodeId);
+                return screen;
+            }
 
-		private class VmNodeEntry
-		{
-			public VmUser user;
-			public VmNodeAddress address;
-		}
-	}
+            return null;
+        }
+
+        private void OnScreenUpdated(VmNodeId nodeId, ScreenData screenData)
+        {
+            var vmNodeAddress = new VmNodeAddress(VmHostAddress.Local, nodeId);
+            var nodeEntries = GetVmNodeDbEntries(vmNodeAddress);
+            foreach (var nodeEntry in nodeEntries)
+            {
+                RaiseOnScreenUpdated(new VmUser(nodeEntry.User), vmNodeAddress, screenData);
+            }
+        }
+
+        private void RaiseOnScreenUpdated(VmUser user, VmNodeAddress address, ScreenData screenData)
+        {
+            var screenUpdatedHandler = ScreenUpdated;
+            if (screenUpdatedHandler != null)
+            {
+                screenUpdatedHandler(user, address, screenData);
+            }
+        }
+
+        private IEnumerable<VmNodeDbEntry> GetVmNodeDbEntries(VmNodeAddress address)
+        {
+            var matchingEntries = vmNodesDbModel.ActiveVmNodes.Where(n => n.HostMachine == address.HostAddress.Ip.ToString() && n.VmNodeId == address.NodeId.NodeId).ToList();
+            return matchingEntries;
+        }
+
+        private VmNodeDbEntry GetVmNodeDbEntry(VmUser user, VmNodeAddress address)
+        {
+            var dbNode = vmNodesDbModel.ActiveVmNodes.FirstOrDefault(n => n.User == user.Username && n.HostMachine == address.HostAddress.Ip.ToString() && n.VmNodeId == address.NodeId.NodeId);
+            return dbNode;
+        }
+    }
 }

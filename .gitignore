@@ -1,2 +1,9 @@
 **/bin/**/*.dll
-**/bin/**/*.dll.mdb
+**/bin/**/*.pdb
+**/bin/**/*.dll.config
+**/bin/**/*.xml
+**/bin/*.dll
+**/bin/*.pdb
+**/bin/*.dll.config
+**/bin/*.xml
+**/obj/**/*

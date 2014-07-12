@@ -1,0 +1,14 @@
+﻿@using ErlangVMA.VmController
+@model VirtualMachineStartOptions
+
+@{
+    ViewBag.Title = "Starting of new virtual machine";
+}
+
+<h2>Start new virtual machine</h2>
+@using(Html.BeginForm())
+{
+    @Html.EditorForModel()
+    
+    <button type="submit">Start</button>
+}

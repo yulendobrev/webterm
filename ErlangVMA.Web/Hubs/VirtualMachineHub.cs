@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNet.SignalR;
-using ErlangVMA.VmController;
-using System.Collections.Generic;
 using ErlangVMA.TerminalEmulation;
+using ErlangVMA.VmController;
+using Microsoft.AspNet.SignalR;
 
 namespace ErlangVMA
 {
@@ -13,6 +14,7 @@ namespace ErlangVMA
     public class VirtualMachineHub : Hub
     {
         private static Dictionary<VmUser, dynamic> clientsDict = new Dictionary<VmUser, dynamic>();
+        private static ConcurrentDictionary<VmUser, List<VmNodeAddress>> screenUpdateRegistrations = new ConcurrentDictionary<VmUser, List<VmNodeAddress>>();
         private IVmBroker vmBroker;
 
         public VirtualMachineHub(IVmBroker vmBroker)
@@ -21,8 +23,13 @@ namespace ErlangVMA
             this.vmBroker = vmBroker;
             this.vmBroker.ScreenUpdated += (user, nodeAddress, screenData) =>
             {
-                var client = clientsDict[user];
-                client.updateScreen(nodeAddress.NodeId, screenData);
+                dynamic client;
+                if (clientsDict.TryGetValue(user, out client) &&
+                    IsUserRegisteredForScreenUpdates(user, nodeAddress))
+                {
+
+                    client.updateScreen(nodeAddress.NodeId, screenData);
+                }
             };
         }
 
@@ -37,26 +44,35 @@ namespace ErlangVMA
             });
         }
 
-        public IEnumerable<VmNodeAddress> GetVirtualMachines()
+        public override Task OnDisconnected(bool stopCalled)
         {
-            var user = GetUser();
-            var virtualMachines = vmBroker.GetVirtualMachines(user);
+            return base.OnDisconnected(stopCalled).ContinueWith(t =>
+            {
+                var user = GetUser();
 
-            return virtualMachines;
+                clientsDict.Remove(user);
+            });
         }
 
-        public VmNodeAddress StartNewNode()
+        public void RegisterForScreenUpdates(VmNodeAddress nodeAddress)
         {
-            var user = GetUser();
-            var nodeAddress = vmBroker.StartNewNode(user);
-
-            return nodeAddress;
+            var nodeAddresses = screenUpdateRegistrations.GetOrAdd(GetUser(), user => new List<VmNodeAddress>());
+            lock (nodeAddresses)
+            {
+                nodeAddresses.Add(nodeAddress);
+            }
         }
 
-        public void ShutdownNode(VmNodeAddress address)
+        public void UnregisterFromScreenUpdates(VmNodeAddress nodeAddress)
         {
-            var user = GetUser();
-            vmBroker.ShutdownNode(user, address);
+            List<VmNodeAddress> nodeAddresses;
+            if (screenUpdateRegistrations.TryGetValue(GetUser(), out nodeAddresses))
+            {
+                lock (nodeAddresses)
+                {
+                    nodeAddresses.Remove(nodeAddress);
+                }
+            }
         }
 
         public void ProcessInput(VmNodeAddress nodeAddress, byte input)
@@ -83,6 +99,20 @@ namespace ErlangVMA
             var user = new VmUser(username);
 
             return user;
+        }
+
+        private bool IsUserRegisteredForScreenUpdates(VmUser user, VmNodeAddress nodeAddress)
+        {
+            List<VmNodeAddress> nodeAddresses;
+            if (screenUpdateRegistrations.TryGetValue(user, out nodeAddresses))
+            {
+                lock (nodeAddresses)
+                {
+                    return nodeAddresses.Contains(nodeAddress);
+                }
+            }
+
+            return false;
         }
     }
 }

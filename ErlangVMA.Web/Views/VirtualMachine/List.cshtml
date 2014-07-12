@@ -1,0 +1,13 @@
+﻿@using ErlangVMA.VmController
+
+
+@model IEnumerable<VirtualMachine>
+
+<ul>
+    @foreach (var vm in Model)
+    {
+        <li>
+            @(vm.Name ?? "") started on @vm.StartedOn on node @vm.NodeAddress@(!vm.IsActive ? " not active" : "")
+        </li>
+    }
+</ul>

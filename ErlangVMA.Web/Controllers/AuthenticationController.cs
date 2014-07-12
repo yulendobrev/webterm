@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 using System.Web.Security;
 
-namespace ErlangVMA
+namespace ErlangVMA.Web.Controllers
 {
     public class AuthenticationController : Controller
     {
