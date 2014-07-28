@@ -10,6 +10,7 @@ namespace ErlangVMA.VmController
     public class ProxyVmNodeManager : IVmNodeManager
     {
         private DuplexChannelFactory<IVmNodeManagerService> channelFactory;
+        private IVmNodeManagerService channel;
 
         public ProxyVmNodeManager(string endpointConfigurationName)
         {
@@ -25,35 +26,65 @@ namespace ErlangVMA.VmController
 
         public VmNodeId StartNewNode()
         {
-            return CreateClient().StartNewNode();
+            return ExecuteWithClient(c => c.StartNewNode());
         }
 
         public bool IsNodeAlive(VmNodeId address)
         {
-            return CreateClient().IsNodeAlive(address);
+            return ExecuteWithClient(c => c.IsNodeAlive(address));
         }
 
         public void ShutdownNode(VmNodeId address)
         {
-            CreateClient().ShutdownNode(address);
+            ExecuteWithClient(c => c.ShutdownNode(address));
         }
 
         public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
         {
-            CreateClient().SendInput(address, symbols);
+            ExecuteWithClient(c => c.SendInput(address, symbols));
         }
 
         public ScreenData GetScreen(VmNodeId nodeId)
         {
-            return CreateClient().GetScreen(nodeId);
+            return ExecuteWithClient(c => c.GetScreen(nodeId));
         }
 
-        private IVmNodeManagerService CreateClient()
+        private void ExecuteWithClient(Action<IVmNodeManagerService> action)
         {
-            var channel = channelFactory.CreateChannel();
-            return channel;
+            ExecuteWithClient(s =>
+            {
+                action(s);
+                return 0;
+            });
         }
 
+        private T ExecuteWithClient<T>(Func<IVmNodeManagerService, T> func)
+        {
+            if (channel == null)
+            {
+                channel = channelFactory.CreateChannel(new InstanceContext(new VmNodeEventListener(this)));
+            }
+
+            var duplexChannel = channel as IDuplexContextChannel;
+            try
+            {
+                return func(channel);
+            }
+            catch (TimeoutException)
+            {
+                duplexChannel.Abort();
+                channel = null;
+                throw;
+            }
+            catch (CommunicationException)
+            {
+                duplexChannel.Abort();
+                channel = null;
+                throw;
+            }
+        }
+
+        [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false, IncludeExceptionDetailInFaults = true)]
         private class VmNodeEventListener : IVmNodeEventListener
         {
             private readonly ProxyVmNodeManager vmNodeManager;

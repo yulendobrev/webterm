@@ -7,12 +7,13 @@ namespace ErlangVMA.VmController
     public interface IVmBroker
     {
         IEnumerable<VirtualMachine> GetVirtualMachines(VmUser user);
-        VmNodeAddress StartNewNode(VmUser user, VirtualMachineStartOptions startOptions);
-        VmNodeAddress StartNewNode(VmUser user, VmHostAddress host, VirtualMachineStartOptions startOptions);
-        void ShutdownNode(VmUser user, VmNodeAddress address);
-        void SendInput(VmUser user, VmNodeAddress address, IEnumerable<byte> symbols);
-        event Action<VmUser, VmNodeAddress, ScreenData> ScreenUpdated;
-        ScreenData GetScreen(VmUser user, VmNodeAddress address);
+        int StartNewNode(VmUser user, VirtualMachineStartOptions startOptions);
+        int StartNewNode(VmUser user, VmHostAddress host, VirtualMachineStartOptions startOptions);
+        void ShutdownNode(VmUser user, int virtualMachineId);
+        void SendInput(VmUser user, int virtualMachineId, IEnumerable<byte> symbols);
+        ScreenData GetScreen(VmUser user, int virtualMachineId);
+
+        event Action<VmUser, int, ScreenData> ScreenUpdated;
     }
 }
 

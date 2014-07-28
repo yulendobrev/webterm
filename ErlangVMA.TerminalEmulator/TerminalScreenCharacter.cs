@@ -1,30 +1,39 @@
 using System;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace ErlangVMA.TerminalEmulation
 {
-	[JsonObject]
-	public class TerminalScreenCharacter
-	{
-		private char character;
-		private ScreenCharacterRendition rendition;
+    [JsonObject]
+    [DataContract]
+    public class TerminalScreenCharacter
+    {
+        private char character;
+        private ScreenCharacterRendition rendition;
 
-		public TerminalScreenCharacter(char character, ScreenCharacterRendition rendition)
-		{
-			this.character = character;
-			this.rendition = rendition;
-		}
+        public TerminalScreenCharacter()
+        { }
 
-		[JsonProperty("c")]
-		public char Character
-		{
-			get { return character; }
-		}
+        public TerminalScreenCharacter(char character, ScreenCharacterRendition rendition)
+        {
+            this.character = character;
+            this.rendition = rendition;
+        }
 
-		[JsonProperty("r")]
-		public ScreenCharacterRendition Rendition
-		{
-			get { return rendition; }
-		}
-	}
+        [JsonProperty("c")]
+        [DataMember]
+        public char Character
+        {
+            get { return character; }
+            set { character = value; }
+        }
+
+        [JsonProperty("r")]
+        [DataMember]
+        public ScreenCharacterRendition Rendition
+        {
+            get { return rendition; }
+            set { rendition = value; }
+        }
+    }
 }

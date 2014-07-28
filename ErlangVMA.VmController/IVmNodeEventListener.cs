@@ -10,7 +10,7 @@ namespace ErlangVMA.VmController
     [ServiceContract]
     public interface IVmNodeEventListener
     {
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ScreenUpdated(VmNodeId nodeId, ScreenData screenData);
     }
 }

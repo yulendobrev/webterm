@@ -7,7 +7,7 @@
     @foreach (var vm in Model)
     {
         <li>
-            @(vm.Name ?? "") started on @vm.StartedOn on node @vm.NodeAddress@(!vm.IsActive ? " not active" : "")
+            @Html.ActionLink(vm.Name ?? "", "Interact", new { nodeAddress = vm.NodeAddress }) started on @vm.StartedOn on node @vm.NodeAddress@(!vm.IsActive ? " not active" : "")
         </li>
     }
 </ul>

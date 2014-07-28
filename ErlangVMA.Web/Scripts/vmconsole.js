@@ -1,4 +1,4 @@
-var nodeId, cursor;
+var virtualMachineId, cursor;
 
 String.prototype.removeLastChar = function () {
     return this.slice(0, this.length - 1);
@@ -52,14 +52,14 @@ function handleConsoleKeyDown(e) {
 
     if (e.ctrlKey) {
         if (e.keyCode >= 64 && e.keyCode < 96) {
-            vmServer.processInput(nodeId, e.keyCode - 64);
+            vmServer.processInput(virtualMachineId, e.keyCode - 64);
         }
         e.preventDefault();
     } else if (e.keyCode in specialKeys) {
-        vmServer.processChunkInput(nodeId, specialKeys[e.keyCode]);
+        vmServer.processChunkInput(virtualMachineId, specialKeys[e.keyCode]);
         e.preventDefault();
     } else if (!e.shiftKey && e.keyCode <= 32) {
-        vmServer.processInput(nodeId, e.keyCode);
+        vmServer.processInput(virtualMachineId, e.keyCode);
         e.preventDefault();
     }
 }
@@ -127,7 +127,7 @@ function getRow(n) {
             console.log("Key " + e.charCode + " pressed");
 
             if (e.charCode !== 0 && !e.ctrlKey) {
-                $.connection.virtualMachineHub.server.processInput(nodeId, e.charCode);
+                $.connection.virtualMachineHub.server.processInput(virtualMachineId, e.charCode);
             }
             
             e.preventDefault();
@@ -144,10 +144,10 @@ function getRow(n) {
             refresh.disabled = true;
         
             var vm = $.connection.virtualMachineHub,
-                screenRefresh = vm.server.getScreen(nodeId);
+                screenRefresh = vm.server.getScreen(virtualMachineId);
             
             screenRefresh.done(function (screen) {
-                vm.client.updateScreen(nodeId, screen);
+                vm.client.updateScreen(virtualMachineId, screen);
             }).fail(function (error) {
                 alert("Refresh failed: " + error);
             }).always(function () {
@@ -194,9 +194,13 @@ function getRow(n) {
         setupUi();
         
         $.connection.hub.start().done(function () {
-            vm.server.startNewNode().done(function (result) {
-                nodeId = result;
-            })
+            var vmConsole = $("#vmConsole");
+
+            virtualMachineId = vmConsole.data("virtualMachineId");
+
+            if (virtualMachineId) {
+                vm.server.registerForScreenUpdates(virtualMachineId);
+            }
         })
     })
 })();

@@ -14,21 +14,21 @@ namespace ErlangVMA
     public class VirtualMachineHub : Hub
     {
         private static Dictionary<VmUser, dynamic> clientsDict = new Dictionary<VmUser, dynamic>();
-        private static ConcurrentDictionary<VmUser, List<VmNodeAddress>> screenUpdateRegistrations = new ConcurrentDictionary<VmUser, List<VmNodeAddress>>();
+        private static ConcurrentDictionary<VmUser, List<int>> screenUpdateRegistrations = new ConcurrentDictionary<VmUser, List<int>>();
         private IVmBroker vmBroker;
 
         public VirtualMachineHub(IVmBroker vmBroker)
             : base()
         {
             this.vmBroker = vmBroker;
-            this.vmBroker.ScreenUpdated += (user, nodeAddress, screenData) =>
+            this.vmBroker.ScreenUpdated += (user, virtualMachineId, screenData) =>
             {
                 dynamic client;
                 if (clientsDict.TryGetValue(user, out client) &&
-                    IsUserRegisteredForScreenUpdates(user, nodeAddress))
+                    IsUserRegisteredForScreenUpdates(user, virtualMachineId))
                 {
 
-                    client.updateScreen(nodeAddress.NodeId, screenData);
+                    client.updateScreen(virtualMachineId, screenData);
                 }
             };
         }
@@ -54,42 +54,43 @@ namespace ErlangVMA
             });
         }
 
-        public void RegisterForScreenUpdates(VmNodeAddress nodeAddress)
+        public void RegisterForScreenUpdates(int virtualMachineId)
         {
-            var nodeAddresses = screenUpdateRegistrations.GetOrAdd(GetUser(), user => new List<VmNodeAddress>());
-            lock (nodeAddresses)
+            var virtualMachineIds = screenUpdateRegistrations.GetOrAdd(GetUser(), user => new List<int>());
+            lock (virtualMachineIds)
             {
-                nodeAddresses.Add(nodeAddress);
+                virtualMachineIds.Add(virtualMachineId);
             }
         }
 
-        public void UnregisterFromScreenUpdates(VmNodeAddress nodeAddress)
+        public void UnregisterFromScreenUpdates(int virtualMachineId)
         {
-            List<VmNodeAddress> nodeAddresses;
-            if (screenUpdateRegistrations.TryGetValue(GetUser(), out nodeAddresses))
+            List<int> virtualMachineIds;
+            if (screenUpdateRegistrations.TryGetValue(GetUser(), out virtualMachineIds))
             {
-                lock (nodeAddresses)
+                lock (virtualMachineIds)
                 {
-                    nodeAddresses.Remove(nodeAddress);
+                    virtualMachineIds.Remove(virtualMachineId);
                 }
             }
         }
 
-        public void ProcessInput(VmNodeAddress nodeAddress, byte input)
+        public void ProcessInput(int virtualMachineId, byte input)
         {
-            ProcessChunkInput(nodeAddress, new[] { input });
+            ProcessChunkInput(virtualMachineId, new[] { input });
         }
 
-        public void ProcessChunkInput(VmNodeAddress nodeAddress, byte[] input)
+        public void ProcessChunkInput(int virtualMachineId, byte[] input)
         {
             var user = GetUser();
-            vmBroker.SendInput(user, nodeAddress, input);
+            vmBroker.SendInput(user, virtualMachineId, input);
         }
 
-        public ScreenData GetScreen(VmNodeAddress address)
+        public ScreenData GetScreen(int virtualMachineId)
         {
             var user = GetUser();
-            var screen = vmBroker.GetScreen(user, address);
+            var screen = vmBroker.GetScreen(user, virtualMachineId);
+
             return screen;
         }
 
@@ -101,14 +102,14 @@ namespace ErlangVMA
             return user;
         }
 
-        private bool IsUserRegisteredForScreenUpdates(VmUser user, VmNodeAddress nodeAddress)
+        private bool IsUserRegisteredForScreenUpdates(VmUser user, int virtualMachineId)
         {
-            List<VmNodeAddress> nodeAddresses;
-            if (screenUpdateRegistrations.TryGetValue(user, out nodeAddresses))
+            List<int> virtualMachineIds;
+            if (screenUpdateRegistrations.TryGetValue(user, out virtualMachineIds))
             {
-                lock (nodeAddresses)
+                lock (virtualMachineIds)
                 {
-                    return nodeAddresses.Contains(nodeAddress);
+                    return virtualMachineIds.Contains(virtualMachineId);
                 }
             }
 

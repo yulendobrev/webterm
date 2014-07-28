@@ -40,15 +40,15 @@ namespace ErlangVMA.Web.Controllers
                 return View(startOptions);
             }
 
-            var vmNodeAddress = vmBroker.StartNewNode(GetCurrentUser(), startOptions);
+            int virtualMachineId = vmBroker.StartNewNode(GetCurrentUser(), startOptions);
 
-            return RedirectToAction("Interact", new { id = vmNodeAddress.NodeId.NodeId });
+            return RedirectToAction("Interact", new { id = virtualMachineId });
         }
 
         [HttpGet]
-        public ActionResult Interact(VmNodeAddress nodeAddress)
+        public ActionResult Interact(int id)
         {
-            return View();
+            return View(id);
         }
 
         [HttpGet]
@@ -58,9 +58,9 @@ namespace ErlangVMA.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Shutdown(VmNodeAddress nodeAddress, string returnUrl)
+        public ActionResult Shutdown(int id, string returnUrl)
         {
-            vmBroker.ShutdownNode(GetCurrentUser(), nodeAddress);
+            vmBroker.ShutdownNode(GetCurrentUser(), id);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {

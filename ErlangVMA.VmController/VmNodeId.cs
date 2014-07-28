@@ -17,7 +17,7 @@ namespace ErlangVMA.VmController
             this.id = id;
         }
 
-        public int NodeId
+        public int Id
         {
             get { return id; }
             set { id = value; }
