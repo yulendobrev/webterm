@@ -1,4 +1,4 @@
-var virtualMachineId, cursor;
+var virtualMachineId;
 
 String.prototype.removeLastChar = function () {
     return this.slice(0, this.length - 1);
@@ -41,75 +41,47 @@ var specialKeys = {
     46: [27, 91, 51, 126]
 };
 
-function handleConsoleKeyDown(e) {
-    var vmConsoleArea = document.getElementById("vmConsoleArea"),
-        vmConsoleDisplay = document.getElementById("vmConsoleDisplay"),
-        vmServer = $.connection.virtualMachineHub.server;
-
-    resetBlinkingCursor();
-
-    console.log("Key down code: " + e.keyCode);
-
-    if (e.ctrlKey) {
-        if (e.keyCode >= 64 && e.keyCode < 96) {
-            vmServer.processInput(virtualMachineId, e.keyCode - 64);
-        }
-        e.preventDefault();
-    } else if (e.keyCode in specialKeys) {
-        vmServer.processChunkInput(virtualMachineId, specialKeys[e.keyCode]);
-        e.preventDefault();
-    } else if (!e.shiftKey && e.keyCode <= 32) {
-        vmServer.processInput(virtualMachineId, e.keyCode);
-        e.preventDefault();
-    }
-}
-
-function getRow(n) {
-    var vmConsoleDisplay = document.getElementById("vmConsoleDisplay");
-    return vmConsoleDisplay.children[n];
-}
-
-(function() {
-    var oldPosition;
-
-    updateCursorPosition = function (cursorPosition) {
-        $(cursor).removeClass("cursor");
-
-        var row = getRow(cursorPosition.r);
-        cursor = row.children[cursorPosition.c];
-
-        $(cursor).addClass("cursor");
-
-        resetBlinkingCursor();
-        oldPosition = { r: cursorPosition.r, c: cursorPosition.c };
-    }
-})();
-
-(function () {
-    var blinkTimerId;
-
-    resetBlinkingCursor = function () {
-        stopBlinkingCursor();
-        blinkTimerId = setInterval(function () { if (cursor) { $(cursor).toggleClass("cursor"); } }, 500);
-    }
-
-    stopBlinkingCursor = function () {
-        if (blinkTimerId) {
-            clearInterval(blinkTimerId);
-        }
-    
-        if (cursor && $(cursor).hasClass("cursor")) {
-            $(cursor).addClass("cursor");
-        }
-    }
-})();
-
 (function () {
     function setupUi() {
         var vmConsole = document.getElementById("vmConsole"),
             vmConsoleArea = document.getElementById("vmConsoleArea"),
             vmConsoleDisplay = document.getElementById("vmConsoleDisplay"),
             refresh = document.getElementById("refresh");
+
+        getRow = function (n) {
+            return vmConsoleDisplay.children[n];
+        };
+
+        (function () {
+            var blinkTimerId, cursor, $cursor;
+
+            updateCursorPosition = function (cursorPosition) {
+                if ($cursor) {
+                    $cursor.removeClass("cursor");
+                }
+
+                var row = getRow(cursorPosition.r);
+                cursor = row.children[cursorPosition.c];
+                $cursor = $(cursor);
+
+                $cursor.addClass("cursor");
+
+                resetBlinkingCursor();
+            }
+
+            resetBlinkingCursor = function () {
+                stopBlinkingCursor();
+                blinkTimerId = setInterval(function () { $cursor.toggleClass("cursor"); }, 500);
+            }
+
+            stopBlinkingCursor = function () {
+                if (blinkTimerId) {
+                    clearInterval(blinkTimerId);
+                }
+
+                $cursor.addClass("cursor");
+            }
+        })();
 
         for (var i = 0; i < 25; ++i) {
             var line = initNewLine();
@@ -119,19 +91,40 @@ function getRow(n) {
         updateCursorPosition({r: 0, c: 0});
         resizeToFit(vmConsoleDisplay);
         
-        $(vmConsoleArea).keydown(handleConsoleKeyDown)
+        function handleConsoleKeyDown(e) {
+            var vmServer = $.connection.virtualMachineHub.server;
+
+            resetBlinkingCursor();
+
+            console.log("Key down code: " + e.keyCode);
+
+            if (e.ctrlKey) {
+                if (e.keyCode >= 64 && e.keyCode < 96) {
+                    vmServer.processInput(virtualMachineId, e.keyCode - 64);
+                }
+                e.preventDefault();
+            } else if (e.keyCode in specialKeys) {
+                vmServer.processChunkInput(virtualMachineId, specialKeys[e.keyCode]);
+                e.preventDefault();
+            } else if (!e.shiftKey && e.keyCode <= 32) {
+                vmServer.processInput(virtualMachineId, e.keyCode);
+                e.preventDefault();
+            }
+        }
+
+        $(vmConsoleArea).keydown(handleConsoleKeyDown);
         $(vmConsoleArea).keyup(function (e) {
             console.log("Key " + e.which + " up");
-        })
+        });
         $(vmConsoleArea).keypress(function (e) {
             console.log("Key " + e.charCode + " pressed");
 
             if (e.charCode !== 0 && !e.ctrlKey) {
                 $.connection.virtualMachineHub.server.processInput(virtualMachineId, e.charCode);
             }
-            
+
             e.preventDefault();
-        })
+        });
         
         $(vmConsole).click(function () { vmConsoleArea.focus() });
         
@@ -158,14 +151,14 @@ function getRow(n) {
     
     $(function () {
         var vm = $.connection.virtualMachineHub;
-        
+
         vm.client.updateScreen = function (id, screenData) {
             var k = 0,
                 data = screenData.d;
-            
+
             for (var row = screenData.y; row < screenData.y + screenData.h; ++row) {
                 var rowDiv = getRow(row);
-                    
+
                 var newContent = data.slice(k, k + screenData.w);
                 for (var i = 0; i < newContent.length; ++i) {
                     var cell = rowDiv.children[screenData.x + i];
@@ -187,12 +180,14 @@ function getRow(n) {
 
                 k += screenData.w;
             }
-            
+
             updateCursorPosition(screenData.c);
         }
-        
+
         setupUi();
-        
+
+        $.connection.hub.logging = true;
+
         $.connection.hub.start().done(function () {
             var vmConsole = $("#vmConsole");
 
@@ -201,6 +196,6 @@ function getRow(n) {
             if (virtualMachineId) {
                 vm.server.registerForScreenUpdates(virtualMachineId);
             }
-        })
-    })
+        });
+    });
 })();
