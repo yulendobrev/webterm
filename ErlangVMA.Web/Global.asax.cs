@@ -26,7 +26,7 @@ namespace ErlangVMA.Web
             AreaRegistration.RegisterAllAreas();
             RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            DependencyResolver.SetResolver(new DependencyManager());
+            DependencyResolver.SetResolver(DependencyManager.Instance);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.Text;
 using ErlangVMA.TerminalEmulation;
@@ -9,17 +10,24 @@ namespace ErlangVMA.VmController
 {
     public class ProxyVmNodeManager : IVmNodeManager
     {
-        private DuplexChannelFactory<IVmNodeManagerService> channelFactory;
+        private ChannelFactory<IVmNodeManagerService> channelFactory;
         private IVmNodeManagerService channel;
+        private DuplexVmInteractionClient duplexClient;
 
         public ProxyVmNodeManager(string endpointConfigurationName)
         {
-            this.channelFactory = new DuplexChannelFactory<IVmNodeManagerService>(new VmNodeEventListener(this), endpointConfigurationName);
+            this.channelFactory = new ChannelFactory<IVmNodeManagerService>(endpointConfigurationName);
+            this.duplexClient = new DuplexVmInteractionClient(RaiseScreenUpdated, IPAddress.Parse("192.168.122.1"), 4300);
+
+            duplexClient.InteractAsync();
         }
 
         public ProxyVmNodeManager(string endpointConfigurationName, string endpointAddress)
         {
-            this.channelFactory = new DuplexChannelFactory<IVmNodeManagerService>(new VmNodeEventListener(this), endpointConfigurationName, new EndpointAddress(endpointAddress));
+            this.channelFactory = new ChannelFactory<IVmNodeManagerService>(endpointConfigurationName, new EndpointAddress(endpointAddress));
+            this.duplexClient = new DuplexVmInteractionClient(RaiseScreenUpdated, IPAddress.Parse("192.168.122.1"), 4300);
+
+            duplexClient.InteractAsync();
         }
 
         public event Action<VmNodeId, ScreenData> ScreenUpdated;
@@ -41,7 +49,8 @@ namespace ErlangVMA.VmController
 
         public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
         {
-            ExecuteWithClient(c => c.SendInput(address, symbols));
+            //ExecuteWithClient(c => c.SendInput(address, symbols));
+            duplexClient.SendInput(address, symbols);
         }
 
         public ScreenData GetScreen(VmNodeId nodeId)
@@ -62,10 +71,10 @@ namespace ErlangVMA.VmController
         {
             if (channel == null)
             {
-                channel = channelFactory.CreateChannel(new InstanceContext(new VmNodeEventListener(this)));
+                channel = channelFactory.CreateChannel();
             }
 
-            var duplexChannel = channel as IDuplexContextChannel;
+            var duplexChannel = channel as IClientChannel;
             try
             {
                 return func(channel);
@@ -84,23 +93,12 @@ namespace ErlangVMA.VmController
             }
         }
 
-        [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false, IncludeExceptionDetailInFaults = true)]
-        private class VmNodeEventListener : IVmNodeEventListener
+        private void RaiseScreenUpdated(VmNodeId nodeId, ScreenData screenData)
         {
-            private readonly ProxyVmNodeManager vmNodeManager;
-
-            public VmNodeEventListener(ProxyVmNodeManager vmNodeManager)
+            var screenUpdatedHandler = ScreenUpdated;
+            if (screenUpdatedHandler != null)
             {
-                this.vmNodeManager = vmNodeManager;
-            }
-
-            public void ScreenUpdated(VmNodeId nodeId, ScreenData screenData)
-            {
-                var screenUpdatedHandler = vmNodeManager.ScreenUpdated;
-                if (screenUpdatedHandler != null)
-                {
-                    screenUpdatedHandler(nodeId, screenData);
-                }
+                screenUpdatedHandler(nodeId, screenData);
             }
         }
     }

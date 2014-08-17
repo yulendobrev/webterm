@@ -11,14 +11,21 @@ namespace ErlangVMA.Web
 {
     public class DependencyManager : IDependencyResolver
     {
+        private static readonly Lazy<DependencyManager> LazyInstance = new Lazy<DependencyManager>(() => new DependencyManager());
+
         private IKernel kernel;
 
-        public DependencyManager()
+        public static DependencyManager Instance
+        {
+            get { return LazyInstance.Value; }
+        }
+
+        protected DependencyManager()
             : this(new StandardKernel())
         {
         }
 
-        public DependencyManager(IKernel kernel)
+        protected DependencyManager(IKernel kernel)
         {
             this.kernel = kernel;
 
@@ -40,9 +47,9 @@ namespace ErlangVMA.Web
             kernel.Bind<IVmBroker>().To<VmBroker>().InSingletonScope();
             kernel.Bind<IVmNodeManager>().To<ProxyVmNodeManager>()
                 .WithConstructorArgument("endpointConfigurationName", "vmNodeManagerEndpoint");
-            kernel.Bind<ITerminalEmulatorFactory>().To<UnixTerminalEmulatorFactory>()
-                .WithConstructorArgument("executablePath", "/bin/bash")
-                .WithConstructorArgument("arguments", new[] { "-i" });
+            //kernel.Bind<ITerminalEmulatorFactory>().To<UnixTerminalEmulatorFactory>()
+            //    .WithConstructorArgument("executablePath", "/bin/bash")
+            //    .WithConstructorArgument("arguments", new[] { "-i" });
         }
     }
 }

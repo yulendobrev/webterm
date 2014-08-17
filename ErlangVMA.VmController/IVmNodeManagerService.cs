@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ErlangVMA.VmController
 {
-    [ServiceContract(Namespace = "http://erlangvma.org/services", CallbackContract = typeof(IVmNodeEventListener))]
+    [ServiceContract(Namespace = "http://erlangvma.org/services")]
     public interface IVmNodeManagerService
     {
         [OperationContract]

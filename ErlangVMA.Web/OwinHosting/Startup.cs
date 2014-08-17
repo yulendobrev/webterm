@@ -15,14 +15,12 @@ namespace ErlangVMA.Web
 
         public void Configuration(IAppBuilder appBuilder)
         {
-            var dependencyManager = new DependencyManager();
-
             appBuilder.MapSignalR("/signalr", new HubConfiguration()
             {
                 EnableJSONP = false,
                 EnableDetailedErrors = true,
                 EnableJavaScriptProxies = true,
-                Resolver = new SignalRDependencyResolver(dependencyManager)
+                Resolver = new SignalRDependencyResolver(DependencyManager.Instance)
             });
         }
     }
