@@ -21,7 +21,7 @@ namespace ErlangVMA.VmController
             nodeManager.ScreenUpdated += OnScreenUpdated;
         }
 
-        public event Action<VmUser, int, ScreenData> ScreenUpdated;
+        public event Action<VmUser, int, ScreenUpdate> ScreenUpdated;
 
         public IEnumerable<VirtualMachine> GetVirtualMachines(VmUser user)
         {
@@ -119,7 +119,7 @@ namespace ErlangVMA.VmController
             return null;
         }
 
-        private void OnScreenUpdated(VmNodeId nodeId, ScreenData screenData)
+        private void OnScreenUpdated(VmNodeId nodeId, ScreenUpdate screenData)
         {
             var vmNodeAddress = new VmNodeAddress(VmHostAddress.Local, nodeId);
             var nodeEntries = GetVmNodeDbEntries(vmNodeAddress);
@@ -129,7 +129,7 @@ namespace ErlangVMA.VmController
             }
         }
 
-        private void RaiseOnScreenUpdated(VmUser user, int virtualMachineId, ScreenData screenData)
+        private void RaiseOnScreenUpdated(VmUser user, int virtualMachineId, ScreenUpdate screenData)
         {
             var screenUpdatedHandler = ScreenUpdated;
             if (screenUpdatedHandler != null)

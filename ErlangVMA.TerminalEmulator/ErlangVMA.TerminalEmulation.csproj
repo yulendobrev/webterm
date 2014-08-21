@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Entities\ScreenData.cs" />
+    <Compile Include="Entities\ScreenDisplayData.cs" />
+    <Compile Include="Entities\ScreenUpdate.cs" />
     <Compile Include="ITerminalEmulatorFactory.cs" />
     <Compile Include="UnixTerminalEmulatorFactory.cs" />
     <Compile Include="TerminalStreamDecoder.cs" />

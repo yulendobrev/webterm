@@ -30,7 +30,7 @@ namespace ErlangVMA.VmController
             duplexClient.InteractAsync();
         }
 
-        public event Action<VmNodeId, ScreenData> ScreenUpdated;
+        public event Action<VmNodeId, ScreenUpdate> ScreenUpdated;
 
         public VmNodeId StartNewNode()
         {
@@ -93,12 +93,12 @@ namespace ErlangVMA.VmController
             }
         }
 
-        private void RaiseScreenUpdated(VmNodeId nodeId, ScreenData screenData)
+        private void RaiseScreenUpdated(VmNodeId nodeId, ScreenUpdate screenUpdate)
         {
             var screenUpdatedHandler = ScreenUpdated;
             if (screenUpdatedHandler != null)
             {
-                screenUpdatedHandler(nodeId, screenData);
+                screenUpdatedHandler(nodeId, screenUpdate);
             }
         }
     }

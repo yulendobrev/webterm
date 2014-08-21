@@ -19,7 +19,7 @@ namespace ErlangVMA.VmController
             this.terminalEmulators = new Dictionary<VmNodeId, TerminalEmulator>();
         }
 
-        public event Action<VmNodeId, ScreenData> ScreenUpdated;
+        public event Action<VmNodeId, ScreenUpdate> ScreenUpdated;
 
         public VmNodeId StartNewNode()
         {
@@ -75,7 +75,11 @@ namespace ErlangVMA.VmController
             var screenUpdatedHandler = ScreenUpdated;
             if (screenUpdatedHandler != null)
             {
-                screenUpdatedHandler(nodeId, screenData);
+                screenUpdatedHandler(nodeId, new ScreenUpdate
+                {
+                    CursorPosition = screenData.CursorPosition,
+                    DisplayUpdates = new List<ScreenDisplayData> { screenData }
+                });
             }
         }
     }

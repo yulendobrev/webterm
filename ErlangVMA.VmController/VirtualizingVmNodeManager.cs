@@ -27,7 +27,7 @@ namespace ErlangVMA.VmController
             throw new NotImplementedException();
         }
 
-        public event Action<VmNodeId, TerminalEmulation.ScreenData> ScreenUpdated;
+        public event Action<VmNodeId, TerminalEmulation.ScreenUpdate> ScreenUpdated;
 
         public TerminalEmulation.ScreenData GetScreen(VmNodeId nodeId)
         {

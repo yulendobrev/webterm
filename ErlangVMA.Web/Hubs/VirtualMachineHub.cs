@@ -21,14 +21,14 @@ namespace ErlangVMA
             : base()
         {
             this.vmBroker = vmBroker;
-            this.vmBroker.ScreenUpdated += (user, virtualMachineId, screenData) =>
+            this.vmBroker.ScreenUpdated += (user, virtualMachineId, screenUpdate) =>
             {
                 dynamic client;
                 if (clientsDict.TryGetValue(user, out client) &&
                     IsUserRegisteredForScreenUpdates(user, virtualMachineId))
                 {
 
-                    client.updateScreen(virtualMachineId, screenData);
+                    client.updateScreen(virtualMachineId, screenUpdate);
                 }
             };
         }

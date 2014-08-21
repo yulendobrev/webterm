@@ -13,16 +13,16 @@ namespace ErlangVMA.VmController
 {
     public class DuplexVmInteractionClient
     {
-        private readonly Action<VmNodeId, ScreenData> onScreenUpdate;
+        private readonly Action<VmNodeId, ScreenUpdate> onScreenUpdate;
         private readonly IPAddress address;
         private readonly int port;
 
         private readonly TcpClient client;
         private readonly BlockingCollection<Tuple<VmNodeId, IEnumerable<byte>>> sendQueue;
 
-        public DuplexVmInteractionClient(Action<VmNodeId, ScreenData> onScreenUpdate, IPAddress address, int port)
+        public DuplexVmInteractionClient(Action<VmNodeId, ScreenUpdate> onScreenUpdate, IPAddress address, int port)
         {
-            this.onScreenUpdate = onScreenUpdate ?? new Action<VmNodeId, ScreenData>((nodeId, screenData) => { });
+            this.onScreenUpdate = onScreenUpdate ?? new Action<VmNodeId, ScreenUpdate>((nodeId, screenData) => { });
             this.address = address;
             this.port = port;
 
@@ -51,28 +51,37 @@ namespace ErlangVMA.VmController
                     while (true)
                     {
                         var vmNodeId = new VmNodeId(streamReader.ReadInt32());
-                        var screenUpdate = new ScreenData();
-
-                        screenUpdate.X = streamReader.ReadInt32();
-                        screenUpdate.Y = streamReader.ReadInt32();
-                        screenUpdate.Width = streamReader.ReadInt32();
-                        screenUpdate.Height = streamReader.ReadInt32();
+                        var screenUpdate = new ScreenUpdate();
 
                         screenUpdate.CursorPosition = new Point();
                         screenUpdate.CursorPosition.Row = streamReader.ReadInt32();
                         screenUpdate.CursorPosition.Column = streamReader.ReadInt32();
 
-                        screenUpdate.Data = new TerminalScreenCharacter[streamReader.ReadInt32()];
-                        for (int i = 0; i < screenUpdate.Data.Length; ++i)
+                        int displayUpdateCount = streamReader.ReadInt32();
+                        screenUpdate.DisplayUpdates = new List<ScreenDisplayData>(displayUpdateCount);
+
+                        for (int i = 0; i < displayUpdateCount; ++i)
                         {
-                            var character = new TerminalScreenCharacter();
-                            character.Character = streamReader.ReadChar();
+                            var displayData = new ScreenDisplayData();
+                            screenUpdate.DisplayUpdates.Add(displayData);
 
-                            character.Rendition = new ScreenCharacterRendition();
-                            character.Rendition.Foreground = (TerminalColor)streamReader.ReadByte();
-                            character.Rendition.Background = (TerminalColor)streamReader.ReadByte();
+                            displayData.X = streamReader.ReadInt32();
+                            displayData.Y = streamReader.ReadInt32();
+                            displayData.Width = streamReader.ReadInt32();
+                            displayData.Height = streamReader.ReadInt32();
 
-                            screenUpdate.Data[i] = character;
+                            displayData.Data = new TerminalScreenCharacter[streamReader.ReadInt32()];
+                            for (int j = 0; j < displayData.Data.Length; ++j)
+                            {
+                                var character = new TerminalScreenCharacter();
+                                character.Character = streamReader.ReadChar();
+
+                                character.Rendition = new ScreenCharacterRendition();
+                                character.Rendition.Foreground = (TerminalColor)streamReader.ReadByte();
+                                character.Rendition.Background = (TerminalColor)streamReader.ReadByte();
+
+                                displayData.Data[j] = character;
+                            }
                         }
 
                         onScreenUpdate(vmNodeId, screenUpdate);

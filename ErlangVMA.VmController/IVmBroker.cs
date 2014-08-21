@@ -13,7 +13,7 @@ namespace ErlangVMA.VmController
         void SendInput(VmUser user, int virtualMachineId, IEnumerable<byte> symbols);
         ScreenData GetScreen(VmUser user, int virtualMachineId);
 
-        event Action<VmUser, int, ScreenData> ScreenUpdated;
+        event Action<VmUser, int, ScreenUpdate> ScreenUpdated;
     }
 }
 

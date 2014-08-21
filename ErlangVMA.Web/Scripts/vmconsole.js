@@ -152,36 +152,38 @@ var specialKeys = {
     $(function () {
         var vm = $.connection.virtualMachineHub;
 
-        vm.client.updateScreen = function (id, screenData) {
-            var k = 0,
-                data = screenData.d;
+        var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
 
-            for (var row = screenData.y; row < screenData.y + screenData.h; ++row) {
-                var rowDiv = getRow(row);
+        vm.client.updateScreen = function (id, screenUpdate) {
+            for (var j = 0; j < screenUpdate.u.length; ++j) {
+                var k = 0,
+                    screenData = screenUpdate.u[j];
 
-                var newContent = data.slice(k, k + screenData.w);
-                for (var i = 0; i < newContent.length; ++i) {
-                    var cell = rowDiv.children[screenData.x + i];
+                for (var row = screenData.y; row < screenData.y + screenData.h; ++row) {
+                    var rowDiv = getRow(row);
 
-                    cell.textContent = newContent[i].c;
+                    var newContent = screenData.d;
+                    for (var i = k; i < k + screenData.w; ++i) {
+                        var cell = rowDiv.children[screenData.x + i - k];
+                        cell.textContent = newContent[i].c;
 
-                    var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
-                    if (newContent[i].r.f != 1) {
-                        cell.style.color = colors[newContent[i].r.f];
-                    } else {
-                        cell.style.color = "";
+                        if (newContent[i].r.f != 1) {
+                            cell.style.color = colors[newContent[i].r.f];
+                        } else {
+                            cell.style.color = "";
+                        }
+                        if (newContent[i].r.b != 0) {
+                            cell.style.backgroundColor = colors[newContent[i].r.b];
+                        } else {
+                            cell.style.backgroundColor = "";
+                        }
                     }
-                    if (newContent[i].r.b != 0) {
-                        cell.style.backgroundColor = colors[newContent[i].r.b];
-                    } else {
-                        cell.style.backgroundColor = "";
-                    }
+
+                    k += screenData.w;
                 }
-
-                k += screenData.w;
             }
 
-            updateCursorPosition(screenData.c);
+            updateCursorPosition(screenUpdate.c);
         }
 
         setupUi();
