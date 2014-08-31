@@ -1,4 +1,8 @@
-var virtualMachineId;
+var virtualMachineId,
+    size = {
+        columns: 80,
+        rows: 24
+    };
 
 String.prototype.removeLastChar = function () {
     return this.slice(0, this.length - 1);
@@ -12,7 +16,7 @@ function initNewLine() {
     var line = document.createElement("div"),
         cell;
 
-    for (var i = 0; i < 80; ++i) {
+    for (var i = 0; i < size.columns; ++i) {
         cell = document.createElement("span");
         cell.textContent = ' ';
         line.appendChild(cell);
@@ -21,10 +25,8 @@ function initNewLine() {
     return line;
 }
 
-function resizeToFit(element) {
-    var $element = $(element);
-    $element.width(element.scrollWidth + "px");
-    $element.height(element.scrollHeight + "px");
+function resizeToFit(vmConsoleDisplay) {
+    $(vmConsoleDisplay).width($(vmConsoleDisplay.children[0].children[0]).width() * size.columns);
 }
 
 var specialKeys = {
@@ -83,13 +85,15 @@ var specialKeys = {
             }
         })();
 
-        for (var i = 0; i < 25; ++i) {
+        for (var i = 0; i < size.rows; ++i) {
             var line = initNewLine();
             vmConsoleDisplay.appendChild(line);
         }
 
-        updateCursorPosition({r: 0, c: 0});
+        updateCursorPosition({ r: 0, c: 0 });
+
         resizeToFit(vmConsoleDisplay);
+        $(vmConsole).width($(vmConsoleDisplay).width());
         
         function handleConsoleKeyDown(e) {
             var vmServer = $.connection.virtualMachineHub.server;

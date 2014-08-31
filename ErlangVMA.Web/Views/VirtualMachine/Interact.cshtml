@@ -3,12 +3,12 @@
     ViewBag.Title = "Interact";
 }
 
-<h2>Interact</h2>
-
 <div>
-    <button id="refresh" style="float:right; margin: 10px 0px">Refresh</button>
-    <div id="vmConsole" data-virtual-machine-id="@Model" style="width: 100%">
-        <textarea id="vmConsoleArea" rows="25" cols="80"></textarea>
-        <div id="vmConsoleDisplay"></div>
-    </div>
+    <h2>Interact</h2>
+    <button id="refresh" style="float: right; margin: 10px 0px">Refresh</button>
+</div>
+
+<div id="vmConsole" data-virtual-machine-id="@Model">
+    <textarea id="vmConsoleArea" cols="80" rows="24"></textarea>
+    <div id="vmConsoleDisplay"></div>
 </div>

@@ -36,10 +36,11 @@ namespace ErlangVMA.VmController
             {
                 var virtualMachine = new VirtualMachine();
 
+                virtualMachine.Id = node.Id;
                 virtualMachine.Name = node.Name;
                 virtualMachine.NodeAddress = new VmNodeAddress(new VmHostAddress(IPAddress.Parse(node.HostMachine)), new VmNodeId(node.VmNodeId));
                 virtualMachine.StartedOn = node.StartedOn;
-                //virtualMachine.IsActive = nodeManager.IsNodeAlive(new VmNodeId(node.VmNodeId));
+                virtualMachine.IsActive = nodeManager.IsNodeAlive(new VmNodeId(node.VmNodeId));
 
                 virtualMachines.Add(virtualMachine);
             }

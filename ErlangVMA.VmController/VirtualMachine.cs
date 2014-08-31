@@ -8,6 +8,8 @@ namespace ErlangVMA.VmController
 {
     public class VirtualMachine
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public VmNodeAddress NodeAddress { get; set; }

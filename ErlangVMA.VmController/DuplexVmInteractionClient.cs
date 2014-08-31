@@ -33,7 +33,8 @@ namespace ErlangVMA.VmController
         public Task InteractAsync()
         {
             return client.ConnectAsync(address, port)
-                         .ContinueWith(t => Task.WhenAny(ReadScreenUpdatesAsync(), SendInputAsync())).Unwrap();
+                         .ContinueWith(t => Task.WhenAny(ReadScreenUpdatesAsync(), SendInputAsync()),
+                                       TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
         }
 
         public void SendInput(VmNodeId nodeId, IEnumerable<byte> bytes)
