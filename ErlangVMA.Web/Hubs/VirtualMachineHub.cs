@@ -8,39 +8,19 @@ using ErlangVMA.TerminalEmulation;
 using ErlangVMA.VmController;
 using Microsoft.AspNet.SignalR;
 
-namespace ErlangVMA
+namespace ErlangVMA.Web
 {
     [Authorize]
     public class VirtualMachineHub : Hub
     {
-        private static ConcurrentDictionary<VmUser, List<ClientConnection>> clientsDict = new ConcurrentDictionary<VmUser, List<ClientConnection>>();
-        private static ConcurrentDictionary<string, List<int>> screenUpdateRegistrations = new ConcurrentDictionary<string, List<int>>();
-        private IVmBroker vmBroker;
+        private readonly IVmBroker vmBroker;
+        private readonly VirtualMachineCommunicationBroker communicationBroker;
 
-        public VirtualMachineHub(IVmBroker vmBroker)
+        public VirtualMachineHub(IVmBroker vmBroker, VirtualMachineCommunicationBroker communicatioBroker)
             : base()
         {
             this.vmBroker = vmBroker;
-            this.vmBroker.ScreenUpdated += (user, virtualMachineId, screenUpdate) =>
-            {
-                List<ClientConnection> clients;
-                if (clientsDict.TryGetValue(user, out clients))
-                {
-                    var clientsSnapshot = new List<ClientConnection>();
-                    lock (clients)
-                    {
-                        clientsSnapshot.AddRange(clients);
-                    }
-
-                    foreach (var client in clientsSnapshot)
-                    {
-                        if (IsClientRegisteredForScreenUpdates(client.ConnectionId, virtualMachineId))
-                        {
-                            client.Client.updateScreen(virtualMachineId, screenUpdate);
-                        }
-                    }
-                }
-            };
+            this.communicationBroker = communicatioBroker;
         }
 
         public override Task OnConnected()
@@ -48,12 +28,7 @@ namespace ErlangVMA
             return base.OnConnected().ContinueWith(t =>
             {
                 var user = GetUser();
-
-                var clients = clientsDict.GetOrAdd(user, u => new List<ClientConnection>());
-                lock (clients)
-                {
-                    clients.Add(new ClientConnection(Context.ConnectionId, Clients.Caller));
-                }
+                this.communicationBroker.RegisterClient(user, Context.ConnectionId, Clients.Caller);
             });
         }
 
@@ -61,47 +36,19 @@ namespace ErlangVMA
         {
             return base.OnDisconnected(stopCalled).ContinueWith(t =>
             {
-                string connectionId = Context.ConnectionId;
                 var user = GetUser();
-
-                List<ClientConnection> clients;
-                if (clientsDict.TryGetValue(user, out clients))
-                {
-                    bool isLastClientRemoved = false;
-                    lock (clients)
-                    {
-                        clients.RemoveAll(c => c.ConnectionId == connectionId);
-                        isLastClientRemoved = clients.Count == 0;
-                    }
-
-                    if (isLastClientRemoved)
-                    {
-                        List<ClientConnection> ignored;
-                        clientsDict.TryRemove(user, out ignored);
-                    }
-                }
+                this.communicationBroker.UnregisterClient(user, Context.ConnectionId);
             });
         }
 
         public void RegisterForScreenUpdates(int virtualMachineId)
         {
-            var virtualMachineIds = screenUpdateRegistrations.GetOrAdd(Context.ConnectionId, connectionId => new List<int>());
-            lock (virtualMachineIds)
-            {
-                virtualMachineIds.Add(virtualMachineId);
-            }
+            this.communicationBroker.RegisterForScreenUpdates(Context.ConnectionId, virtualMachineId);
         }
 
         public void UnregisterFromScreenUpdates(int virtualMachineId)
         {
-            List<int> virtualMachineIds;
-            if (screenUpdateRegistrations.TryGetValue(Context.ConnectionId, out virtualMachineIds))
-            {
-                lock (virtualMachineIds)
-                {
-                    virtualMachineIds.Remove(virtualMachineId);
-                }
-            }
+            this.communicationBroker.UnregisterFromScreenUpdates(Context.ConnectionId, virtualMachineId);
         }
 
         public void ProcessInput(int virtualMachineId, byte input)
@@ -129,53 +76,6 @@ namespace ErlangVMA
             var user = new VmUser(username);
 
             return user;
-        }
-
-        private bool IsClientRegisteredForScreenUpdates(string clientId, int virtualMachineId)
-        {
-            List<int> virtualMachineIds;
-            if (screenUpdateRegistrations.TryGetValue(clientId, out virtualMachineIds))
-            {
-                lock (virtualMachineIds)
-                {
-                    return virtualMachineIds.Contains(virtualMachineId);
-                }
-            }
-
-            return false;
-        }
-
-        private class ClientConnection
-        {
-            private readonly string connectionId;
-            private readonly dynamic client;
-
-            public ClientConnection(string connectionId, dynamic client)
-            {
-                this.connectionId = connectionId;
-                this.client = client;
-            }
-
-            public string ConnectionId
-            {
-                get { return connectionId; }
-            }
-
-            public dynamic Client
-            {
-                get { return client; }
-            }
-
-            public override bool Equals(object obj)
-            {
-                var otherClient = obj as ClientConnection;
-                return otherClient != null && connectionId.Equals(otherClient.connectionId);
-            }
-
-            public override int GetHashCode()
-            {
-                return connectionId != null ? connectionId.GetHashCode() : 0;
-            }
         }
     }
 }

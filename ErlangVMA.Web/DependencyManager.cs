@@ -44,9 +44,18 @@ namespace ErlangVMA.Web
 
         private void RegisterBindings()
         {
-            kernel.Bind<IVmBroker>().To<VmBroker>().InSingletonScope();
-            kernel.Bind<IVmNodeManager>().To<ProxyVmNodeManager>()
-                .WithConstructorArgument("endpointConfigurationName", "vmNodeManagerEndpoint");
+            kernel.Bind<IVmBroker>()
+                  .To<VmBroker>()
+                  .InSingletonScope();
+
+            kernel.Bind<IVmNodeManager>()
+                  .To<ProxyVmNodeManager>()
+                  .WithConstructorArgument("endpointConfigurationName", "vmNodeManagerEndpoint");
+
+            kernel.Bind<VirtualMachineCommunicationBroker>()
+                  .ToSelf()
+                  .InSingletonScope();
+
             //kernel.Bind<ITerminalEmulatorFactory>().To<UnixTerminalEmulatorFactory>()
             //    .WithConstructorArgument("executablePath", "/bin/bash")
             //    .WithConstructorArgument("arguments", new[] { "-i" });

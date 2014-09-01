@@ -152,6 +152,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Hubs\VirtualMachineCommunicationBroker.cs" />
     <Compile Include="Hubs\VirtualMachineHub.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="OwinHosting\Startup.cs" />
