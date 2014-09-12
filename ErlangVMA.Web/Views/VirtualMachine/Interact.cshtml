@@ -3,12 +3,23 @@
     ViewBag.Title = "Interact";
 }
 
-<div>
-    <h2>Interact</h2>
-    <button id="refresh" style="float: right; margin: 10px 0px">Refresh</button>
-</div>
+@section scripts
+{
+    <script src="@Url.Content("~/signalr/hubs")" type="text/javascript"></script>
+    @Scripts.Render("~/vmconsole")
+}
+
+<h2>Interact</h2>
 
 <div id="vmConsole" data-virtual-machine-id="@Model">
     <textarea id="vmConsoleArea" cols="80" rows="24"></textarea>
     <div id="vmConsoleDisplay"></div>
 </div>
+
+<button id="refresh" style="float: right; margin: 10px 0px">Refresh</button>
+
+@using (Html.BeginForm("Shutdown", "VirtualMachine"))
+{
+    @Html.Hidden("id", Model)
+    <button type="submit" style="float: right; margin: 10px 0px">Shutdown</button>
+}

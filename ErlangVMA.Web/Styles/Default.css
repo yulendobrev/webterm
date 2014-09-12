@@ -1,5 +1,6 @@
 body {
     background: #708010;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
 }
 
 #upperToolbar {
@@ -9,22 +10,46 @@ body {
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 36px;
+    font-weight: 500;
+}
+
+#upperToolbar > div {
+    padding: 5px 20px;
 }
 
 #upperToolbar a {
     color: white;
+    display: inline-block;
+    height: 100%;
     text-decoration: none;
 }
 
-#upperToolbar a:hover {
-    color: yellow;
-    text-decoration: none;
+    #upperToolbar a:hover {
+        color: #ffb93b;
+        text-decoration: none;
+    }
+
+#links {
+    float: left;
+    height: 100%;
 }
+
+a.actionlink {
+    font-size: 20px;
+    padding: 0px 10px;
+    height: 100%;
+    display: inline-block;
+    height: 100%;
+}
+
+    a.actionlink:hover {
+        background: rgba(255, 255, 255, 0.31);
+    }
 
 #mainContent {
     margin: 48px;
 }
+
 
 #vmConsole {
     background: #202020;
@@ -56,4 +81,44 @@ body {
 
 .cursor {
     outline: 1px solid white;
+}
+
+
+input {
+    vertical-align: middle;
+    padding: 5px 10px;
+    margin: 5px 0px;
+    border: 2px solid #222222;
+    font-size: 16px;
+}
+
+input:focus {
+    box-shadow: 0px 0px 2px 2px rgba(34, 34, 34, 0.75);
+}
+
+.input-validation-error {
+    border-color: rgb(139, 0, 0);
+}
+
+.input-validation-error:focus {
+    box-shadow: 0px 0px 2px 2px rgba(139, 0, 0, 0.75);
+}
+
+.field-validation-error {
+    color: darkred;
+    font-size: 16px;
+}
+
+button, input[type=button] {
+    margin: 5px 0px;
+    background-color: #222222;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 16px;
+}
+
+button:hover, input[type=button]:hover {
+    background-color: #444444;
+    cursor: pointer;
 }

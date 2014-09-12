@@ -46,13 +46,17 @@ namespace ErlangVMA.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Interact(int id)
+        public ActionResult Interact(int? id)
         {
-            return View(id);
+            if (id == null)
+            {
+                return RedirectToAction("List");
+            }
+            return View(id.Value);
         }
 
         [HttpGet]
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
             return View();
         }
