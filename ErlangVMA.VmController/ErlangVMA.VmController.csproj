@@ -62,7 +62,6 @@
     <Compile Include="IVmNodeManagerService.cs" />
     <Compile Include="Persistence\VmNodeDbEntry.cs" />
     <Compile Include="ProxyVmNodeManager.cs" />
-    <Compile Include="VirtualizingVmNodeManager.cs" />
     <Compile Include="Persistence\VmNodesDbModel.cs" />
     <Compile Include="VirtualMachine.cs" />
     <Compile Include="VirtualMachineStartOptions.cs" />
@@ -70,7 +69,6 @@
     <Compile Include="IVmNodeManager.cs" />
     <Compile Include="VmBroker.cs" />
     <Compile Include="LocalShellVmNodeManager.cs" />
-    <Compile Include="VirtualBoxVmNodeManager.cs" />
     <Compile Include="VmNodeId.cs" />
     <Compile Include="VmHostAddress.cs" />
     <Compile Include="VmNodeAddress.cs" />

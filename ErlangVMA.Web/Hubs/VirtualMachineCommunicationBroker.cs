@@ -71,6 +71,9 @@ namespace ErlangVMA.Web
                     List<ClientConnection> ignored;
                     clientsDict.TryRemove(user, out ignored);
                 }
+
+                List<int> virtualMachineIds;
+                screenUpdateRegistrations.TryRemove(connectionId, out virtualMachineIds);
             }
         }
 

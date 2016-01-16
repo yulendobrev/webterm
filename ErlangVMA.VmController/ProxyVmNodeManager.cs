@@ -49,7 +49,6 @@ namespace ErlangVMA.VmController
 
         public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
         {
-            //ExecuteWithClient(c => c.SendInput(address, symbols));
             duplexClient.SendInput(address, symbols);
         }
 

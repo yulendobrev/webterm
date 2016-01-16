@@ -20,9 +20,6 @@ namespace ErlangVMA.VmController
         void ShutdownNode(VmNodeId address);
 
         [OperationContract]
-        void SendInput(VmNodeId address, IEnumerable<byte> symbols);
-
-        [OperationContract]
         ScreenData GetScreen(VmNodeId nodeId);
     }
 }

@@ -16,11 +16,11 @@ namespace ErlangVMA.Web
         private readonly IVmBroker vmBroker;
         private readonly VirtualMachineCommunicationBroker communicationBroker;
 
-        public VirtualMachineHub(IVmBroker vmBroker, VirtualMachineCommunicationBroker communicatioBroker)
+        public VirtualMachineHub(IVmBroker vmBroker, VirtualMachineCommunicationBroker communicationBroker)
             : base()
         {
             this.vmBroker = vmBroker;
-            this.communicationBroker = communicatioBroker;
+            this.communicationBroker = communicationBroker;
         }
 
         public override Task OnConnected()
