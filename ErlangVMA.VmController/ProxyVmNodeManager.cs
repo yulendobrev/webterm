@@ -54,7 +54,19 @@ namespace ErlangVMA.VmController
 
         public ScreenData GetScreen(VmNodeId nodeId)
         {
-            return ExecuteWithClient(c => c.GetScreen(nodeId));
+            return ExecuteWithClient(c =>
+            {
+                var screen = c.GetScreen(nodeId);
+                return new ScreenData
+                {
+                    CursorPosition = screen.CursorPosition,
+                    X = screen.X,
+                    Y = screen.Y,
+                    Width = screen.Width,
+                    Height = screen.Height,
+                    Data = screen.Data
+                };
+            });
         }
 
         private void ExecuteWithClient(Action<IVmNodeManagerService> action)

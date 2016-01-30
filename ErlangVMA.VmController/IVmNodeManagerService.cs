@@ -20,6 +20,6 @@ namespace ErlangVMA.VmController
         void ShutdownNode(VmNodeId address);
 
         [OperationContract]
-        ScreenData GetScreen(VmNodeId nodeId);
+        Screen GetScreen(VmNodeId nodeId);
     }
 }

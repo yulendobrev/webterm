@@ -140,17 +140,49 @@ var specialKeys = {
         $(refresh).click(function () {
             refresh.disabled = true;
         
-            var vm = $.connection.virtualMachineHub,
-                screenRefresh = vm.server.getScreen(virtualMachineId);
-            
-            screenRefresh.done(function (screen) {
-                vm.client.updateScreen(virtualMachineId, screen);
-            }).fail(function (error) {
-                alert("Refresh failed: " + error);
-            }).always(function () {
+            refreshScreen().always(function () {
                 refresh.disabled = false;
             });
         });
+    }
+
+    function refreshScreen() {
+        var vm = $.connection.virtualMachineHub,
+            screenRefresh = vm.server.getScreen(virtualMachineId);
+
+        return screenRefresh.done(function (screen) {
+            applyScreenData(virtualMachineId, screen);
+            updateCursorPosition(screen.c);
+        }).fail(function (error) {
+            alert("Refresh failed: " + error);
+        });
+    }
+
+    function applyScreenData(id, screenData) {
+        var k = 0;
+
+        for (var row = screenData.y; row < screenData.y + screenData.h; ++row) {
+            var rowDiv = getRow(row);
+
+            var newContent = screenData.d;
+            for (var i = k; i < k + screenData.w; ++i) {
+                var cell = rowDiv.children[screenData.x + i - k];
+                cell.textContent = newContent[i].c;
+
+                if (newContent[i].r.f != 1) {
+                    cell.style.color = colors[newContent[i].r.f];
+                } else {
+                    cell.style.color = "";
+                }
+                if (newContent[i].r.b != 0) {
+                    cell.style.backgroundColor = colors[newContent[i].r.b];
+                } else {
+                    cell.style.backgroundColor = "";
+                }
+            }
+
+            k += screenData.w;
+        }
     }
     
     $(function () {
@@ -159,31 +191,9 @@ var specialKeys = {
         var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
 
         vm.client.updateScreen = function (id, screenUpdate) {
-            for (var j = 0; j < screenUpdate.u.length; ++j) {
-                var k = 0,
-                    screenData = screenUpdate.u[j];
-
-                for (var row = screenData.y; row < screenData.y + screenData.h; ++row) {
-                    var rowDiv = getRow(row);
-
-                    var newContent = screenData.d;
-                    for (var i = k; i < k + screenData.w; ++i) {
-                        var cell = rowDiv.children[screenData.x + i - k];
-                        cell.textContent = newContent[i].c;
-
-                        if (newContent[i].r.f != 1) {
-                            cell.style.color = colors[newContent[i].r.f];
-                        } else {
-                            cell.style.color = "";
-                        }
-                        if (newContent[i].r.b != 0) {
-                            cell.style.backgroundColor = colors[newContent[i].r.b];
-                        } else {
-                            cell.style.backgroundColor = "";
-                        }
-                    }
-
-                    k += screenData.w;
+            if (screenUpdate.u) {
+                for (var j = 0; j < screenUpdate.u.length; ++j) {
+                    applyScreenData(id, screenUpdate.u[j]);
                 }
             }
 
@@ -201,6 +211,7 @@ var specialKeys = {
 
             if (virtualMachineId) {
                 vm.server.registerForScreenUpdates(virtualMachineId);
+                refreshScreen();
             }
         });
     });

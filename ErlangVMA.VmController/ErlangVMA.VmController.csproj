@@ -63,6 +63,7 @@
     <Compile Include="Persistence\VmNodeDbEntry.cs" />
     <Compile Include="ProxyVmNodeManager.cs" />
     <Compile Include="Persistence\VmNodesDbModel.cs" />
+    <Compile Include="Screen.cs" />
     <Compile Include="VirtualMachine.cs" />
     <Compile Include="VirtualMachineStartOptions.cs" />
     <Compile Include="VmUser.cs" />
