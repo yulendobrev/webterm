@@ -1,9 +1,6 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using ErlangVMA.TerminalEmulation;
 
 namespace ErlangVMA.VmController
@@ -16,7 +13,7 @@ namespace ErlangVMA.VmController
         public LocalShellVmNodeManager(ITerminalEmulatorFactory terminalEmulatorFactory)
         {
             this.terminalEmulatorFactory = terminalEmulatorFactory;
-            this.terminalEmulators = new Dictionary<VmNodeId, TerminalEmulator>();
+            this.terminalEmulators = new ConcurrentDictionary<VmNodeId, TerminalEmulator>();
         }
 
         public event Action<VmNodeId, ScreenUpdate> ScreenUpdated;
@@ -36,36 +33,43 @@ namespace ErlangVMA.VmController
         public bool IsNodeAlive(VmNodeId address)
         {
             var terminalEmulator = GetTerminalEmulator(address);
-            return terminalEmulator.IsAlive;
+			return terminalEmulator != null && terminalEmulator.IsAlive;
         }
 
         public void ShutdownNode(VmNodeId address)
         {
             var terminalEmulator = GetTerminalEmulator(address);
-            terminalEmulator.Shutdown();
+			if (terminalEmulator != null)
+			{
+				terminalEmulator.Shutdown();
+			}
         }
 
         public void SendInput(VmNodeId address, IEnumerable<byte> symbols)
         {
             var terminalEmulator = GetTerminalEmulator(address);
-            terminalEmulator.Input(symbols);
+			if (terminalEmulator != null)
+			{
+				terminalEmulator.Input(symbols);
+			}
         }
 
         public ScreenData GetScreen(VmNodeId address)
         {
             var terminalEmulator = GetTerminalEmulator(address);
-            var screen = terminalEmulator.GetScreen();
+			if (terminalEmulator != null)
+			{
+				var screen = terminalEmulator.GetScreen();
+				return screen;
+			}
 
-            return screen;
+			return new ScreenData { CursorPosition = new Point(), Data = new TerminalScreenCharacter[0] };
         }
 
         private TerminalEmulator GetTerminalEmulator(VmNodeId address)
         {
             TerminalEmulator terminalEmulator;
-            if (!terminalEmulators.TryGetValue(address, out terminalEmulator))
-            {
-                throw new InvalidOperationException(string.Format("Node with id {0} not found", address));
-            }
+			terminalEmulators.TryGetValue(address, out terminalEmulator);
 
             return terminalEmulator;
         }
@@ -84,4 +88,3 @@ namespace ErlangVMA.VmController
         }
     }
 }
-

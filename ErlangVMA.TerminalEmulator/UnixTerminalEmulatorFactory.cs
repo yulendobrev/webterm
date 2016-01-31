@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ErlangVMA.TerminalEmulation
+﻿namespace ErlangVMA.TerminalEmulation
 {
     public class UnixTerminalEmulatorFactory : ITerminalEmulatorFactory
     {
-        private string executablePath;
-        private string[] arguments;
+        private readonly string executablePath;
+        private readonly string[] arguments;
+
+		public UnixTerminalEmulatorFactory(string executablePath) : this(executablePath, new string[0])
+		{ }
 
         public UnixTerminalEmulatorFactory(string executablePath, string[] arguments)
         {

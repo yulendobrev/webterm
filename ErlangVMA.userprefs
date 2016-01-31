@@ -1,33 +1,14 @@
-﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+﻿<Properties GitUserInfo="UsingGIT" StartupItem="ErlangVMA.Web/ErlangVMA.Web.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="firefox" />
   <MonoDevelop.Ide.Workbench ActiveDocument="ErlangVMA.TerminalEmulator/Entities/ScreenCharacterRendition.cs">
     <Files>
-      <File FileName="ErlangVMA/Scripts/vmconsole.js" Line="181" Column="7" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="144" Column="41" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="503" Column="1" />
-      <File FileName="ErlangVMA.TerminalEmulator/Entities/ScreenCharacterRendition.cs" Line="13" Column="4" />
-      <File FileName="ErlangVMA.TerminalEmulator/Entities/GraphicRendition.cs" Line="47" Column="35" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreenCharacter.cs" Line="21" Column="25" />
-      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="70" Column="5" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalEmulator.cs" Line="1" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreen.cs" Line="1" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/Entities/ScreenCharacterRendition.cs" Line="13" Column="3" />
+      <File FileName="ErlangVMA.TerminalEmulator/Entities/GraphicRendition.cs" Line="1" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalScreenCharacter.cs" Line="1" Column="1" />
+      <File FileName="ErlangVMA.TerminalEmulator/TerminalStreamDecoder.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="ErlangVMA" expanded="True">
-            <Node name="Scripts" expanded="True" />
-          </Node>
-          <Node name="ErlangVMA.TerminalEmulation" expanded="True">
-            <Node name="Entities" expanded="True">
-              <Node name="ScreenCharacterRendition.cs" selected="True" />
-            </Node>
-          </Node>
-          <Node name="ErlangVMA.TerminalEmulation.PseudoTerminalWrapper" expanded="True" />
-        </State>
-      </Pad>
-      <Pad Id="ClassPad">
-        <State expanded="True" selected="True" />
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>

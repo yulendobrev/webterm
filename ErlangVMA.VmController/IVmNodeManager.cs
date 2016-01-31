@@ -15,4 +15,3 @@ namespace ErlangVMA.VmController
         ScreenData GetScreen(VmNodeId nodeId);
     }
 }
-

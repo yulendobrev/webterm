@@ -16,7 +16,7 @@ namespace ErlangVMA.TerminalEmulation
         public PseudoTerminalStreams CreatePseudoTerminal(string executablePath, string[] arguments)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(
-                                             "../ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/bin/Debug/ErlangVMA.TerminalEmulation",
+                                             "../../../ErlangVMA.TerminalEmulation.PseudoTerminalWrapper/bin/Debug/ErlangVMA.TerminalEmulation",
                                              string.Format("{0} {1}", executablePath, string.Join(" ", arguments)));
 
             startInfo.RedirectStandardInput = true;
