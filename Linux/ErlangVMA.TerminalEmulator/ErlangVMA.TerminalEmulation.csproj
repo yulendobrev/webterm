@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BF048058-8AE8-4CB3-8882-717C9634A48A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ErlangVMA.TerminalEmulation</RootNamespace>
+    <AssemblyName>ErlangVMA.TerminalEmulator</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\IPseudoTerminal.cs">
+      <Link>IPseudoTerminal.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\ITerminalCommandInterpreter.cs">
+      <Link>ITerminalCommandInterpreter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\ITerminalDisplay.cs">
+      <Link>ITerminalDisplay.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\ITerminalEmulatorFactory.cs">
+      <Link>ITerminalEmulatorFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\ITerminalStreamDecoder.cs">
+      <Link>ITerminalStreamDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\TerminalEmulator.cs">
+      <Link>TerminalEmulator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\TerminalScreen.cs">
+      <Link>TerminalScreen.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\TerminalScreenCharacter.cs">
+      <Link>TerminalScreenCharacter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\TerminalStreamDecoder.cs">
+      <Link>TerminalStreamDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\UnixPseudoTerminal.cs">
+      <Link>UnixPseudoTerminal.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\UnixTerminalEmulatorFactory.cs">
+      <Link>UnixTerminalEmulatorFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\CharacterSetSlot.cs">
+      <Link>Entities\CharacterSetSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\ClearDirection.cs">
+      <Link>Entities\ClearDirection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\Direction.cs">
+      <Link>Entities\Direction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\GraphicRendition.cs">
+      <Link>Entities\GraphicRendition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\Point.cs">
+      <Link>Entities\Point.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\PseudoTerminalStreams.cs">
+      <Link>Entities\PseudoTerminalStreams.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\ScreenCharacterRendition.cs">
+      <Link>Entities\ScreenCharacterRendition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\ScreenData.cs">
+      <Link>Entities\ScreenData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\ScreenDisplayData.cs">
+      <Link>Entities\ScreenDisplayData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\ScreenUpdate.cs">
+      <Link>Entities\ScreenUpdate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\TerminalColor.cs">
+      <Link>Entities\TerminalColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\TerminalFontEffect.cs">
+      <Link>Entities\TerminalFontEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\TerminalMode.cs">
+      <Link>Entities\TerminalMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ErlangVMA.TerminalEmulator\Entities\TerminalWindowSize.cs">
+      <Link>Entities\TerminalWindowSize.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ErlangVMA.TerminalEmulator\packages.config">
+      <Link>packages.config</Link>
+    </None>
+  </ItemGroup>
+</Project>
