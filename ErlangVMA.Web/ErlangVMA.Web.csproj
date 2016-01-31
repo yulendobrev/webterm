@@ -39,6 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
@@ -135,6 +138,7 @@
     <Compile Include="Hubs\VirtualMachineCommunicationBroker.cs" />
     <Compile Include="Hubs\VirtualMachineHub.cs" />
     <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="OwinHosting\Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalRDependencyResolver.cs" />
@@ -172,6 +176,7 @@
     <Content Include="Views\VirtualMachine\StartNew.cshtml" />
     <Content Include="Views\VirtualMachine\Interact.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <Content Include="Views\Authentication\Register.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

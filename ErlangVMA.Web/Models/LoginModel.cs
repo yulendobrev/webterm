@@ -7,10 +7,6 @@ namespace ErlangVMA
 {
 	public class LoginModel
 	{
-		public LoginModel ()
-		{
-		}
-
 		[Required]
 		public string Name
 		{

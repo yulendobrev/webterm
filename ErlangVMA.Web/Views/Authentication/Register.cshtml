@@ -1,0 +1,40 @@
+﻿@model ErlangVMA.RegisterModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<form id="registerForm" method="post">
+    <h3>
+        Register
+    </h3>
+
+    <table>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.UserName):
+            </td>
+            <td>
+                @Html.EditorFor(model => model.UserName)
+            </td>
+            <td>@Html.ValidationMessageFor(model => model.UserName)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.Password):</td>
+            <td>
+                @Html.PasswordFor(model => model.Password)
+            </td>
+            <td>@Html.ValidationMessageFor(model => model.Password)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.ConfirmPassword):</td>
+            <td>
+                @Html.PasswordFor(model => model.ConfirmPassword)
+            </td>
+            <td>@Html.ValidationMessageFor(model => model.ConfirmPassword)</td>
+        </tr>
+    </table>
+
+    <input type="submit" value="Register" name="Register" />
+</form>
+

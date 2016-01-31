@@ -2,6 +2,7 @@
 using Owin;
 using Microsoft.Owin;
 using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Security.Cookies;
 
 [assembly: OwinStartup(typeof(ErlangVMA.Web.Startup))]
 
@@ -15,6 +16,12 @@ namespace ErlangVMA.Web
 
         public void Configuration(IAppBuilder appBuilder)
         {
+            appBuilder.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "ApplicationCookie",
+                LoginPath = new PathString("/Authentication/Login")
+            });
+
             appBuilder.MapSignalR("/signalr", new HubConfiguration()
             {
                 EnableJSONP = false,

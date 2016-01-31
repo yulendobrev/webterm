@@ -83,6 +83,18 @@ a.actionlink {
     outline: 1px solid white;
 }
 
+#loginForm, #registerForm {
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+#loginForm table, #registerForm table, .fullwidth {
+    width: 100%;
+}
+
+#loginForm input[type=submit], #registerForm input[type=submit] {
+    float: right;
+}
 
 input {
     vertical-align: middle;
@@ -109,7 +121,7 @@ input:focus {
     font-size: 16px;
 }
 
-button, input[type=button] {
+button, input[type=button], input[type=submit] {
     margin: 5px 0px;
     background-color: #222222;
     color: white;
@@ -124,7 +136,7 @@ button:disabled, button:disabled:hover {
     cursor: default;
 }
 
-button:hover, input[type=button]:hover {
+button:hover, input[type=button]:hover, input[type=submit]:hover {
     background-color: #444444;
     cursor: pointer;
 }

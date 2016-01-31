@@ -8,7 +8,7 @@ using ErlangVMA.VmController;
 
 namespace ErlangVMA.Web.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class VirtualMachineController : Controller
     {
         private readonly IVmBroker vmBroker;

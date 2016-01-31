@@ -18,8 +18,11 @@
                     @Html.ActionLink("Start new", "StartNew", "VirtualMachine", null, new { @class = "actionlink" })
                 </div>
                 <div style="float: right">
+                @if (Request.IsAuthenticated)
+                {
                     @Html.Encode(Context.User.Identity.Name)
                     <a href="@Url.Action("Logout", "Authentication")"><b>Logout</b></a>
+                }
                 </div>
                 <div style="clear: both"></div>
             </div>
