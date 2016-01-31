@@ -80,6 +80,12 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ErlangVMA.TerminalEmulator\ErlangVMA.TerminalEmulation.csproj">
+      <Project>{bf048058-8ae8-4cb3-8882-717c9634a48a}</Project>
+      <Name>ErlangVMA.TerminalEmulation</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
