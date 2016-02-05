@@ -22,6 +22,7 @@ body {
     display: inline-block;
     height: 100%;
     text-decoration: none;
+    font-size: 20px;
 }
 
     #upperToolbar a:hover {
@@ -88,12 +89,17 @@ a.actionlink {
     max-width: 400px;
 }
 
-#loginForm table, #registerForm table, .fullwidth {
+#loginForm table, #registerForm table {
     width: 100%;
 }
 
 #loginForm input[type=submit], #registerForm input[type=submit] {
     float: right;
+}
+
+.fullwidth {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input {

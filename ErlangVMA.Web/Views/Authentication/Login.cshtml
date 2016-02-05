@@ -11,7 +11,7 @@
                 @Html.LabelFor(model => model.Name):
             </td>
             <td>
-                @Html.EditorFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Name, new { @class = "fullwidth" })
             </td>
         </tr>
         <tr>
@@ -21,7 +21,7 @@
         <tr>
             <td>@Html.LabelFor(model => model.Password):</td>
             <td>
-                @Html.PasswordFor(model => model.Password)
+                @Html.PasswordFor(model => model.Password, new { @class = "fullwidth" })
             </td>
         </tr>
         <tr>
@@ -31,14 +31,18 @@
         <tr>
             <td colspan="2">
                 <label>
-                    @Html.EditorFor(model => model.Remember)
+                    @Html.CheckBoxFor(model => model.Remember)
                     Remember me
                 </label>
             </td>
         </tr>
+        <tr>
+            <td>
+                <a href="@Url.Action("Register")">Register</a>
+            </td>
+            <td>
+                <input type="submit" value="Login" name="Login" />
+            </td>
+        </tr>
     </table>
-
-    <a href="@Url.Action("Register")">Register</a>
-
-    <input type="submit" value="Login" name="Login" />
 </form>

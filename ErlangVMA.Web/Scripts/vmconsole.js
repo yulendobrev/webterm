@@ -100,7 +100,7 @@ var specialKeys = {
 
             resetBlinkingCursor();
 
-            console.log("Key down code: " + e.keyCode);
+            console.log("Key " + e.keyCode + "down at " + performance.now());
 
             if (e.ctrlKey) {
                 if (e.keyCode >= 64 && e.keyCode < 96) {
@@ -118,13 +118,15 @@ var specialKeys = {
 
         $(vmConsoleArea).keydown(handleConsoleKeyDown);
         $(vmConsoleArea).keyup(function (e) {
-            console.log("Key " + e.which + " up");
+            console.log("Key " + e.which + " up at " + performance.now());
         });
         $(vmConsoleArea).keypress(function (e) {
-            console.log("Key " + e.charCode + " pressed");
+            var startTime = performance.now();
+            console.log("Key " + e.charCode + " pressed at " + startTime);
 
             if (e.charCode !== 0 && !e.ctrlKey) {
                 $.connection.virtualMachineHub.server.processInput(virtualMachineId, e.charCode);
+                console.log("Processing input took " + (performance.now() - startTime) + " ms");
             }
 
             e.preventDefault();
@@ -139,8 +141,11 @@ var specialKeys = {
         
         $(refresh).click(function () {
             refresh.disabled = true;
+
+            var startTime = performance.now();
         
             refreshScreen().always(function () {
+                console.log("Refresh took " + (performance.now() - startTime) + " ms");
                 refresh.disabled = false;
             });
         });
@@ -191,6 +196,8 @@ var specialKeys = {
         var colors = ["black", "white", "red", "yellow", "green", "cyan", "blue", "magenta"];
 
         vm.client.updateScreen = function (id, screenUpdate) {
+            console.log("Updating screen at " + performance.now());
+
             if (screenUpdate.u) {
                 for (var j = 0; j < screenUpdate.u.length; ++j) {
                     applyScreenData(id, screenUpdate.u[j]);

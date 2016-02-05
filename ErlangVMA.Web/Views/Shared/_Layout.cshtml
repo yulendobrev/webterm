@@ -20,8 +20,13 @@
                 <div style="float: right">
                 @if (Request.IsAuthenticated)
                 {
-                    @Html.Encode(Context.User.Identity.Name)
+                    <span>Hello, @Html.Encode(Context.User.Identity.Name)</span>
                     <a href="@Url.Action("Logout", "Authentication")"><b>Logout</b></a>
+                }
+                else
+                {
+                    @Html.ActionLink("Register", "Register", "Authentication", null, new { @class = "actionlink" })
+                    @Html.ActionLink("Login", "Login", "Authentication", null, new { @class = "actionlink" })
                 }
                 </div>
                 <div style="clear: both"></div>

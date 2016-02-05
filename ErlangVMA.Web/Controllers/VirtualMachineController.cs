@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -35,12 +36,16 @@ namespace ErlangVMA.Web.Controllers
         [HttpPost]
         public ActionResult StartNew(VirtualMachineStartOptions startOptions)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             if (!ModelState.IsValid)
             {
                 return View(startOptions);
             }
 
             int virtualMachineId = vmBroker.StartNewNode(GetCurrentUser(), startOptions);
+
+            Debug.WriteLine("Starting new virtual machine took {0} ms", stopwatch.ElapsedMilliseconds);
 
             return RedirectToAction("Interact", new { id = virtualMachineId });
         }

@@ -16,10 +16,11 @@
     <div id="vmConsoleDisplay"></div>
 </div>
 
-<button id="refresh" style="float: right; margin: 10px 0px">Refresh</button>
-
-@using (Html.BeginForm("Shutdown", "VirtualMachine"))
-{
-    @Html.Hidden("id", Model)
-    <button type="submit" style="float: right; margin: 10px 0px">Shutdown</button>
-}
+<div style="float: right">
+    <button id="refresh">Refresh</button>
+    @using (Html.BeginForm("Shutdown", "VirtualMachine", FormMethod.Post, new { style = "display: inline; margin: 0 10px" } ))
+    {
+        @Html.Hidden("id", Model)
+        <button type="submit">Shutdown</button>
+    }
+</div>
