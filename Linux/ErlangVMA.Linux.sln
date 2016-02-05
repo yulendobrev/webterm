@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ErlangVMA.TerminalEmulation.PseudoTerminalWrapper", "ErlangVMA.TerminalEmulation.PseudoTerminalWrapper\ErlangVMA.TerminalEmulation.PseudoTerminalWrapper.cproj", "{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErlangVMA.TerminalEmulation", "ErlangVMA.TerminalEmulator\ErlangVMA.TerminalEmulation.csproj", "{BF048058-8AE8-4CB3-8882-717C9634A48A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErlangVMA.VmController", "ErlangVMA.VmController\ErlangVMA.VmController.csproj", "{74961AFC-2CC1-40B9-A509-1E6923799462}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{30986E18-ED9F-47A6-9DD7-498689E82C7C}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErlangVMA.VmNodeServices", "ErlangVMA.VmNodeServices\ErlangVMA.VmNodeServices.csproj", "{8F5052CA-B9D4-4C23-ADE0-67CA9A376AB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562FE3C2-C90D-4F1B-ABA6-390E4E4935E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74961AFC-2CC1-40B9-A509-1E6923799462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74961AFC-2CC1-40B9-A509-1E6923799462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74961AFC-2CC1-40B9-A509-1E6923799462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74961AFC-2CC1-40B9-A509-1E6923799462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F5052CA-B9D4-4C23-ADE0-67CA9A376AB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5052CA-B9D4-4C23-ADE0-67CA9A376AB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5052CA-B9D4-4C23-ADE0-67CA9A376AB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5052CA-B9D4-4C23-ADE0-67CA9A376AB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF048058-8AE8-4CB3-8882-717C9634A48A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF048058-8AE8-4CB3-8882-717C9634A48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF048058-8AE8-4CB3-8882-717C9634A48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF048058-8AE8-4CB3-8882-717C9634A48A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.VersionControlPolicy = $2
+		$2.inheritsSet = Mono
+		$0.ChangeLogPolicy = $3
+		$3.UpdateMode = None
+		$3.MessageStyle = $4
+		$4.LineAlign = 0
+		$3.inheritsSet = Mono
+		StartupItem = ErlangVMA.VmNodeServices.Hosting\ErlangVMA.VmNodeServices.Hosting.csproj
+	EndGlobalSection
+EndGlobal
