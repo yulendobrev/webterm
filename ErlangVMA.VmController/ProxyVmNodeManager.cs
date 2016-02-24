@@ -22,10 +22,13 @@ namespace ErlangVMA.VmController
             duplexClient.InteractAsync();
         }
 
-        public ProxyVmNodeManager(string endpointConfigurationName, string endpointAddress)
+        public ProxyVmNodeManager(ExecutionEngineMachine machine)
         {
-            this.channelFactory = new ChannelFactory<IVmNodeManagerService>(endpointConfigurationName, new EndpointAddress(endpointAddress));
-            this.duplexClient = new DuplexVmInteractionClient(RaiseScreenUpdated, IPAddress.Parse("192.168.122.1"), 4300);
+            this.channelFactory = new ChannelFactory<IVmNodeManagerService>(machine.VirtualMachineServiceEndpointConfiguration);
+            var uriBUilder = new UriBuilder(this.channelFactory.Endpoint.Address.Uri);
+            uriBUilder.Host = machine.IpAddress;
+            this.channelFactory.Endpoint.Address = new EndpointAddress(uriBUilder.ToString());
+            this.duplexClient = new DuplexVmInteractionClient(RaiseScreenUpdated, IPAddress.Parse(machine.IpAddress), machine.DuplexInteractionServerPort);
 
             duplexClient.InteractAsync();
         }

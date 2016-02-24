@@ -128,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BundleConfig.cs" />
+    <Compile Include="Configuration\ErlangExecutionEnvironmentSection.cs" />
+    <Compile Include="Configuration\ErlangExecutionMachineElement.cs" />
+    <Compile Include="Configuration\ErlangExecutionMachinesCollectionElement.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\VirtualMachineController.cs" />

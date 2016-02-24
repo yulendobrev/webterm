@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ErlangVMA.TerminalEmulation;
 using ErlangVMA.VmController;
+using ErlangVMA.Web.Configuration;
 using Ninject;
 
 namespace ErlangVMA.Web
@@ -44,13 +46,22 @@ namespace ErlangVMA.Web
 
         private void RegisterBindings()
         {
+            var executionEnvironmentSection = (ErlangExecutionEnvironmentSection) ConfigurationManager.GetSection("erlangExecutionEnvironment");
+
+            var machines = new List<ExecutionEngineMachine>();
+            foreach (ErlangExecutionMachineElement machineElement in executionEnvironmentSection.ErlangExecutionMachines)
+            {
+                machines.Add(new ExecutionEngineMachine{
+                    IpAddress = machineElement.Address,
+                    VirtualMachineServiceEndpointConfiguration = machineElement.VirtualMachineServiceEndpointConfiguration,
+                    DuplexInteractionServerPort = machineElement.DuplexInteractionServerPort
+                });
+            }
+
             kernel.Bind<IVmBroker>()
                   .To<VmBroker>()
-                  .InSingletonScope();
-
-            kernel.Bind<IVmNodeManager>()
-                  .To<ProxyVmNodeManager>()
-                  .WithConstructorArgument("endpointConfigurationName", "vmNodeManagerEndpoint");
+                  .InSingletonScope()
+                  .WithConstructorArgument("machines", machines);
 
             kernel.Bind<VirtualMachineCommunicationBroker>()
                   .ToSelf()

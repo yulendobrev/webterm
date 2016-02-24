@@ -55,11 +55,13 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="DuplexVmInteractionClient.cs" />
+    <Compile Include="ExecutionEngineMachine.cs" />
     <Compile Include="IVmBroker.cs" />
     <Compile Include="IVmNodeManagerService.cs" />
-    <Compile Include="Persistence\VmNodeDbEntry.cs" />
+    <Compile Include="Persistence\ExecutionMachineLoad.cs" />
+    <Compile Include="Persistence\VmNodeEntry.cs" />
     <Compile Include="ProxyVmNodeManager.cs" />
-    <Compile Include="Persistence\VmNodesDbModel.cs" />
+    <Compile Include="Persistence\VmNodesDbContext.cs" />
     <Compile Include="Screen.cs" />
     <Compile Include="VirtualMachine.cs" />
     <Compile Include="VirtualMachineStartOptions.cs" />

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ErlangVMA.VmController.Persistence
 {
-    public class VmNodeDbEntry
+    public class VmNodeEntry
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
