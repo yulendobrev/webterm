@@ -6,6 +6,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 using System.Web.Security;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
 
 namespace ErlangVMA.Web.Controllers
 {
@@ -24,14 +27,21 @@ namespace ErlangVMA.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                //if (Membership.ValidateUser(model.Name, model.Password))
+                var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(new IdentityDbContext("VmNodesDbContext")));
+                var user = userManager.FindAsync(model.Name, model.Password).Result;
+
+                if (user != null)
                 {
-                    Request.GetOwinContext().Authentication.SignIn(new Microsoft.Owin.Security.AuthenticationProperties
-                    {
-                        IsPersistent = model.Remember
-                    }, new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, model.Name) }, "ApplicationCookie"));
+                    var authentication = Request.GetOwinContext().Authentication;
+                    var identity = userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie).Result;
+
+                    authentication.SignIn(new AuthenticationProperties { IsPersistent = model.Remember }, identity);
 
                     return Redirect(!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "No user with the provided user name and password exists");
                 }
             }
 
@@ -49,13 +59,43 @@ namespace ErlangVMA.Web.Controllers
         [AllowAnonymous]
         public ActionResult Register(RegisterModel model)
         {
-            if (!ModelState.IsValid)
+            if (model.Password != model.ConfirmPassword)
             {
-                return View(model);
+                ModelState.AddModelError(string.Empty, "Password confirmation failed");
             }
 
-            //FormsAuthentication.SetAuthCookie(model.UserName, false);
-            return Redirect("/");
+            if (ModelState.IsValid)
+            {
+                var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(new IdentityDbContext("VmNodesDbContext")));
+                var registration = userManager.CreateAsync(new IdentityUser { UserName = model.UserName }, model.Password).Result;
+
+                if (registration.Succeeded)
+                {
+                    var authentication = Request.GetOwinContext().Authentication;
+
+                    var user = userManager.FindAsync(model.UserName, model.Password).Result;
+                    if (user != null)
+                    {
+                        var identity = userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie).Result;
+                        authentication.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
+
+                        return Redirect("/");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "No user with the provided user name and password exists");
+                    }
+                }
+                else
+                {
+                    foreach (string error in registration.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+                }
+            }
+
+            return View(model);
         }
 
         [HttpGet]

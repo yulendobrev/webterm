@@ -127,6 +127,12 @@ input:focus {
     font-size: 16px;
 }
 
+.validation-summary-errors ul {
+    padding: 0;
+    list-style: none inside;
+    color: darkred;
+}
+
 button, input[type=button], input[type=submit] {
     margin: 5px 0px;
     background-color: #222222;

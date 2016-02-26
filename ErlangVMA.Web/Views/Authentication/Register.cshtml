@@ -43,6 +43,11 @@
             <td>@Html.ValidationMessageFor(model => model.ConfirmPassword)</td>
         </tr>
         <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(true)
+            </td>
+        </tr>
+        <tr>
             <td></td>
             <td>
                 <input type="submit" value="Register" name="Register" />
