@@ -100,7 +100,7 @@ var specialKeys = {
 
             resetBlinkingCursor();
 
-            console.log("Key " + e.keyCode + "down at " + performance.now());
+            console.log("Key " + e.keyCode + " down at " + performance.now());
 
             if (e.ctrlKey) {
                 if (e.keyCode >= 64 && e.keyCode < 96) {
